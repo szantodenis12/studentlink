@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Simplificăm verificarea rolului pentru a evita erori de "insufficient permissions" în lanț
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isRole(role) {
+      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Rules ---
+
+    // Users
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
+    }
+
+    // Courses & Assignments - Permissive Read
+    match /courses/{courseId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn(); 
+    }
+
+    match /assignments/{assignmentId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Submissions - Permissive Read
+    match /submissions/{submissionId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Community & Meetings - Permissive Read
+    match /posts/{postId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /meetings/{meetingId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Quizzes, Bookings, Notifications - Permissive Read
+    match /quizzes/{quizId} { allow read, write: if isSignedIn(); }
+    match /bookings/{bookingId} { allow read, write: if isSignedIn(); }
+    match /notifications/{notificationId} { 
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+  }
+}

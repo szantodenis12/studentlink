@@ -1,0 +1,15 @@
+{
+  "name": "STUDENTLINK",
+  "description": "Explorați platforma academică completă: cursuri, comunitate studențească, marketplace de mentorat și recomandări de carieră asistate de AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "academic-classroom",
+    "student-community",
+    "mentorship-marketplace",
+    "ai-career-advisor"
+  ]
+}
