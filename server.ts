@@ -136,6 +136,78 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
+  // --- AI Routes ---
+  app.post("/api/ai/career-advice", async (req, res) => {
+    const { studentName, grades, strengths } = req.body;
+    try {
+      const { GoogleGenAI } = await import("@google/genai");
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+      const model = "gemini-3-flash-preview";
+      const gradesStr = Object.entries(grades).map(([subject, grade]) => `${subject}: ${grade}`).join(", ");
+      const prompt = `Analizează performanța academică a studentului ${studentName}.
+      Note: ${gradesStr}
+      Puncte forte: ${strengths.join(", ")}
+      
+      Oferă recomandări personalizate de carieră și joburi în limba română (aproximativ 250 cuvinte). 
+      Include:
+      1. Top 3 domenii potrivite.
+      2. Tipuri de roluri specifice.
+      3. Sugestii pentru dezvoltare ulterioară (skills de învățat).
+      Folosește un ton încurajator și profesional.`;
+
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt
+      });
+      res.json({ text: response.text });
+    } catch (error) {
+      console.error("Error generating career advice:", error);
+      res.status(500).json({ error: "Failed to generate advice" });
+    }
+  });
+
+  app.post("/api/ai/quiz", async (req, res) => {
+    const { courseTitle, description, materialsText } = req.body;
+    try {
+      const { GoogleGenAI, Type } = await import("@google/genai");
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+      const model = "gemini-3-flash-preview";
+      const prompt = `Ești un asistent academic expert. Generează un test grilă (quiz) în limba română pentru cursul "${courseTitle}".
+      Descriere: ${description}
+      Materiale: ${materialsText}
+      
+      Cerințe:
+      - Generează 5 întrebări relevante.
+      - Fiecare întrebare trebuie să aibă 4 variante de răspuns.
+      - Specifică indexul corect (0-3).
+      - Testul trebuie să fie echilibrat ca dificultate.`;
+
+      const response = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                question: { type: Type.STRING },
+                options: { type: Type.ARRAY, items: { type: Type.STRING } },
+                correctIndex: { type: Type.NUMBER }
+              },
+              required: ["question", "options", "correctIndex"]
+            }
+          }
+        }
+      });
+      res.json(JSON.parse(response.text || "[]"));
+    } catch (error) {
+      console.error("Error generating quiz:", error);
+      res.status(500).json({ error: "Failed to generate quiz" });
+    }
+  });
+
   // --- Vite Middleware ---
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
