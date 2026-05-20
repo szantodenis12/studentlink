@@ -69,10 +69,14 @@ service cloud.firestore {
       allow write: if isSignedIn();
     }
 
-    // Quizzes, Bookings, Notifications - Permissive Read
+    // Quizzes, Bookings, Notifications, Reviews - Permissive Read
     match /quizzes/{quizId} { allow read, write: if isSignedIn(); }
     match /bookings/{bookingId} { allow read, write: if isSignedIn(); }
     match /notifications/{notificationId} { 
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+    match /reviews/{reviewId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }

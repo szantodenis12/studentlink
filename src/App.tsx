@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import { SearchProvider } from "./context/SearchContext";
 import AppLayout from "./components/AppLayout";
 import LoginPage from "./pages/LoginPage";
 import AcademicPage from "./pages/AcademicPage";
@@ -68,17 +69,17 @@ const Dashboard = () => {
               className="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-indigo-300 border border-white/5"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse shadow-[0_0_8px_rgba(129,140,248,0.8)]" />{" "}
-              Sistem Activ
+              System Active
             </motion.div>
             <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter leading-[1.1] font-display uppercase">
-              Salutare, <br />
+              Hello, <br />
               <span className="text-indigo-400">
                 {profile?.fullName?.split(" ")[0]}
               </span>
             </h2>
             <p className="text-indigo-100/60 font-medium text-xl max-w-xl border-l-4 border-indigo-500/30 pl-6">
-              Conectarea la platforma StudentLink este activă. Toate resursele
-              academice sunt pregătite și gata de explorare.
+              Your StudentLink platform connection is active. All academic resources
+              are prepared and ready for exploration.
             </p>
           </div>
 
@@ -101,7 +102,7 @@ const Dashboard = () => {
               </div>
             </div>
             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">
-              Colegi Online
+              Online Classmates
             </p>
           </div>
         </div>
@@ -110,21 +111,21 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           {
-            label: "Module Active",
+            label: "Active Modules",
             value: activeCourses,
             icon: GraduationCap,
             color: "indigo",
             delay: 0.1,
           },
           {
-            label: "Sarcini Critice",
+            label: "Critical Tasks",
             value: 0,
             icon: Clock,
             color: "amber",
             delay: 0.2,
           },
           {
-            label: "Index Academic",
+            label: "Academic Index",
             value: average,
             icon: Award,
             color: "violet",
@@ -164,19 +165,19 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-2xl dark:shadow-none shadow-indigo-100">
               <Sparkles className="w-5 h-5" />
             </div>
-            Analiză Inteligentă
+            Smart Analysis
           </h3>
           <div className="space-y-8">
             <div className="p-6 glass bg-[var(--bg-app)]/60 rounded-[1.8rem] border border-[var(--glass-border)] flex gap-6 hover:shadow-xl transition-all group">
               <div className="w-3 h-3 rounded-full bg-violet-500 mt-2 shrink-0 animate-pulse shadow-[0_0_10px_rgba(139,92,246,0.5)]" />
               <div>
                 <p className="text-[11px] font-black text-violet-600 uppercase tracking-widest mb-2">
-                  Performanță Percentilă
+                  Percentile Performance
                 </p>
                 <p className="text-lg font-medium text-[var(--text-muted)] leading-relaxed">
-                  Te afli în segmentul de elită de{" "}
-                  <span className="text-[var(--text-main)] font-black">15%</span> pe baza
-                  activității recente.
+                  You are in the elite segment of{" "}
+                  <span className="text-[var(--text-main)] font-black">15%</span> based on
+                  recent activity.
                 </p>
               </div>
             </div>
@@ -184,12 +185,12 @@ const Dashboard = () => {
               <div className="w-3 h-3 rounded-full bg-indigo-500 mt-2 shrink-0 shadow-[0_0_10px_rgba(79,70,229,0.5)]" />
               <div>
                 <p className="text-[11px] font-black text-indigo-600 uppercase tracking-widest mb-2">
-                  Predicție Evaluare
+                  Evaluation Prediction
                 </p>
                 <p className="text-lg font-medium text-[var(--text-muted)] leading-relaxed">
-                  Calculăm un grad de complexitate{" "}
-                  <span className="text-[var(--text-main)] font-black">Ridicat</span>{" "}
-                  pentru următorul test de Matematică.
+                  We calculate a{" "}
+                  <span className="text-[var(--text-main)] font-black">High</span> complexity
+                  grade for the upcoming Math test.
                 </p>
               </div>
             </div>
@@ -199,10 +200,10 @@ const Dashboard = () => {
         <div className="glass p-8 rounded-[2.5rem] h-full flex flex-col justify-center text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/20 to-transparent pointer-events-none" />
           <h3 className="text-2xl font-black text-[var(--text-main)] mb-2 uppercase tracking-tighter relative z-10">
-            Rețeaua StudentLink
+            StudentLink Network
           </h3>
           <p className="text-[var(--text-muted)] font-medium mb-10 text-lg max-w-sm mx-auto relative z-10">
-            Colaborează, învață și accelerează evoluția alături de colectiv.
+            Collaborate, learn, and accelerate growth alongside the community.
           </p>
           <div className="grid grid-cols-2 gap-6 relative z-10">
              <button className="p-8 glass bg-[var(--bg-app)]/60 hover:bg-slate-800 dark:hover:bg-indigo-900/40 rounded-[3rem] transition-all group/btn shadow-xl">
@@ -210,7 +211,7 @@ const Dashboard = () => {
                 1.2k
               </p>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] group-hover/btn:text-indigo-400 transition-colors">
-                Unități Active
+                Active Units
               </p>
             </button>
             <button className="p-8 glass bg-[var(--bg-app)]/60 hover:bg-slate-800 dark:hover:bg-violet-900/40 rounded-[3rem] transition-all group/btn shadow-xl">
@@ -218,7 +219,7 @@ const Dashboard = () => {
                 45+
               </p>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] group-hover/btn:text-violet-400 transition-colors">
-                Noduri Studiu
+                Study Nodes
               </p>
             </button>
           </div>
@@ -258,91 +259,93 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Toaster position="top-right" richColors />
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <Dashboard />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/onboarding"
-              element={
-                <ProtectedRoute>
-                  <OnboardingPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/academic"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <AcademicPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/academic/:courseId"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <CourseDetailsPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/community"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <CommunityPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/mentorship"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <MentorshipPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <ProfilePage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute>
-                  <AppLayout>
-                    <AdminPage />
-                  </AppLayout>
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <SearchProvider>
+          <BrowserRouter>
+            <Toaster position="top-right" richColors />
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <Dashboard />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/onboarding"
+                element={
+                  <ProtectedRoute>
+                    <OnboardingPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/academic"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <AcademicPage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/academic/:courseId"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <CourseDetailsPage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/community"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <CommunityPage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mentorship"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <MentorshipPage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <ProfilePage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AppLayout>
+                      <AdminPage />
+                    </AppLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </SearchProvider>
       </AuthProvider>
     </ThemeProvider>
   );

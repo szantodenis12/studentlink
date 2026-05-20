@@ -27,11 +27,13 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ro } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { cn } from "../lib/utils";
+import { useSearch } from "../context/SearchContext";
 
 export default function CommunityPage() {
   const { profile } = useAuth();
+  const { searchQuery } = useSearch();
   const [posts, setPosts] = useState<Post[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [activeTab, setActiveTab] = useState<"feed" | "meetings">("feed");
@@ -58,7 +60,7 @@ export default function CommunityPage() {
     const handleOAuthMessage = (event: MessageEvent) => {
       if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
         setGoogleTokens(event.data.tokens);
-        toast.success("Cont Google conectat!");
+        toast.success("Google Account connected!");
       }
     };
     window.addEventListener("message", handleOAuthMessage);
@@ -99,9 +101,9 @@ export default function CommunityPage() {
       setSelectedFile(null);
       setUploadProgress(0);
       setIsCreatingPost(false);
-      toast.success("Postare publicată!");
+      toast.success("Post published successfully!");
     } catch (err) {
-      toast.error("Eroare la publicare.");
+      toast.error("Error publishing post.");
       console.error(err);
     } finally {
       setIsUploading(false);
@@ -120,14 +122,14 @@ export default function CommunityPage() {
       const { url } = await resp.json();
       window.open(url, "google_auth", "width=600,height=700");
     } catch (err) {
-      toast.error("Eroare la conectarea Google.");
+      toast.error("Error connecting Google account.");
     }
   };
 
   const handleGenerateMeet = async () => {
     if (!googleTokens) return;
     if (!meetTitle || !meetDate) {
-      toast.error("Completează titlul și data întâlnirii mai întâi!");
+      toast.error("Please fill in the meeting title and date first!");
       return;
     }
 
@@ -147,10 +149,10 @@ export default function CommunityPage() {
       if (data.meetLink) {
         setMeetLoc(data.meetLink);
         setMeetType("online");
-        toast.success("Link Google Meet generat!");
+        toast.success("Google Meet link generated!");
       }
     } catch (err) {
-      toast.error("Eroare la generarea link-ului.");
+      toast.error("Error generating meeting link.");
     } finally {
       setIsGeneratingMeet(false);
     }
@@ -172,11 +174,32 @@ export default function CommunityPage() {
       });
       setIsCreatingMeeting(false);
       setMeetTitle("");
-      toast.success("Întâlnire organizată!");
+      toast.success("Meeting scheduled successfully!");
     } catch (err) {
-      toast.error("Eroare la organizare.");
+      toast.error("Error scheduling meeting.");
     }
   };
+
+  // Filter posts reactively using global searchQuery
+  const filteredPosts = posts.filter((post) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (query === "") return true;
+    return (
+      post.content.toLowerCase().includes(query) ||
+      post.authorName.toLowerCase().includes(query)
+    );
+  });
+
+  // Filter meetings reactively using global searchQuery
+  const filteredMeetings = meetings.filter((meet) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (query === "") return true;
+    return (
+      meet.title.toLowerCase().includes(query) ||
+      meet.description.toLowerCase().includes(query) ||
+      meet.location.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
@@ -192,7 +215,7 @@ export default function CommunityPage() {
           )}
         >
           <MessageSquare className="w-5 h-5" />
-          <span>Flux Comunitate</span>
+          <span>Community Feed</span>
         </button>
         <button
           onClick={() => setActiveTab("meetings")}
@@ -204,7 +227,7 @@ export default function CommunityPage() {
           )}
         >
           <Calendar className="w-5 h-5" />
-          <span>Sesiuni de Studiu</span>
+          <span>Study Sessions</span>
         </button>
       </div>
 
@@ -233,7 +256,7 @@ export default function CommunityPage() {
                 </div>
                 <div className="flex-1 space-y-6">
                   <textarea
-                    placeholder="Participă la comunitatea StudentLink... Notițe, resurse sau întrebări către rețea."
+                    placeholder="Engage with the StudentLink community... Share notes, resources, or questions with the network."
                     className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-950/40 border border-[var(--glass-border)] rounded-[2.5rem] p-8 min-h-[160px] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none resize-none transition-all font-medium text-lg placeholder:text-[var(--text-muted)] opacity-60 text-[var(--text-main)]"
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
@@ -254,7 +277,7 @@ export default function CommunityPage() {
                         <span>
                           {selectedFile
                             ? selectedFile.name
-                            : "Atașament Digital"}
+                            : "Digital Attachment"}
                         </span>
                       </label>
                       {selectedFile && (
@@ -273,7 +296,7 @@ export default function CommunityPage() {
                       }
                       className="bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-700 text-white px-10 py-5 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl disabled:opacity-30 transition-all flex items-center gap-3 active:scale-95 whitespace-nowrap"
                     >
-                      {isUploading ? "Se sincronizează..." : "Emitere Semnal"}{" "}
+                      {isUploading ? "Syncing..." : "Broadcast Signal"}{" "}
                       <Send className="w-4 h-4" />
                     </button>
                   </div>
@@ -293,7 +316,7 @@ export default function CommunityPage() {
 
             {/* Posts List */}
             <div className="space-y-8">
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -321,9 +344,9 @@ export default function CommunityPage() {
                         <Clock className="w-3.5 h-3.5 text-indigo-500" />
                         {post.createdAt
                           ? format(post.createdAt.toDate(), "d MMM - HH:mm", {
-                              locale: ro,
+                              locale: enUS,
                             })
-                          : "Momentan"}
+                          : "Just now"}
                       </p>
                     </div>
                   </div>
@@ -373,17 +396,17 @@ export default function CommunityPage() {
             <div className="flex justify-between items-center glass bg-[var(--bg-app)]/40 p-8 rounded-[3rem] border border-[var(--glass-border)] backdrop-blur-2xl">
               <div>
                 <h3 className="text-2xl font-black text-[var(--text-main)] tracking-tighter uppercase font-display">
-                  Spațiu Colaborativ
+                  Collaborative Space
                 </h3>
                 <p className="text-slate-400 font-medium">
-                  Organizează întâlniri și colaborează cu colegii tăi.
+                  Schedule meetings and collaborate with your peers.
                 </p>
               </div>
               <button
                 onClick={() => setIsCreatingMeeting(true)}
                 className="px-10 py-5 bg-slate-800 dark:bg-indigo-600 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 shadow-2xl hover:bg-slate-900 dark:hover:bg-indigo-700 transition-all active:scale-95"
               >
-                <Plus className="w-5 h-5" /> Lansează Sesiune
+                <Plus className="w-5 h-5" /> Launch Session
               </button>
             </div>
 
@@ -406,32 +429,32 @@ export default function CommunityPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="md:col-span-2 space-y-3">
                         <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
-                          Subiect Sesiune
+                          Session Subject
                         </label>
                         <input
                           required
                           className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-[var(--text-main)] text-sm uppercase tracking-tight"
-                          placeholder="e.g. Recapitulare Examen Fizică Cuantică"
+                          placeholder="e.g., Quantum Physics Exam Review"
                           value={meetTitle}
                           onChange={(e) => setMeetTitle(e.target.value)}
                         />
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
-                          Tip Eveniment
+                          Event Type
                         </label>
                         <select
                           className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none appearance-none font-black text-[10px] uppercase tracking-widest cursor-pointer text-[var(--text-main)]"
                           value={meetType}
                           onChange={(e) => setMeetType(e.target.value as any)}
                         >
-                          <option value="online">Prezență ONLINE</option>
-                          <option value="physical">Prezență FIZICĂ</option>
+                          <option value="online">ONLINE Presence</option>
+                          <option value="physical">PHYSICAL Presence</option>
                         </select>
                       </div>
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
-                          Dată și Oră
+                          Date & Time
                         </label>
                         <input
                           type="datetime-local"
@@ -444,8 +467,8 @@ export default function CommunityPage() {
                       <div className="md:col-span-2 space-y-3">
                         <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
                           {meetType === "online"
-                            ? "Link Conectare"
-                            : "Locație Fizică"}
+                            ? "Connection Link"
+                            : "Physical Location"}
                         </label>
                         <div className="flex gap-4">
                           <input
@@ -454,7 +477,7 @@ export default function CommunityPage() {
                             placeholder={
                               meetType === "online"
                                 ? "Google Meet / Zoom URL"
-                                : "Biblioteca Centrală / Sala 201"
+                                : "Central Library / Room 201"
                             }
                             value={meetLoc}
                             onChange={(e) => setMeetLoc(e.target.value)}
@@ -472,7 +495,7 @@ export default function CommunityPage() {
                                 ) : (
                                   <Video className="w-5 h-5" />
                                 )}{" "}
-                                Generați Meet
+                                Generate Meet
                               </button>
                             ) : (
                               <button
@@ -492,13 +515,13 @@ export default function CommunityPage() {
                         onClick={() => setIsCreatingMeeting(false)}
                         className="px-10 py-5 font-black text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)] hover:text-indigo-600 transition-all"
                       >
-                        Revocare
+                        Cancel
                       </button>
                       <button
                         type="submit"
                         className="px-12 py-5 bg-slate-800 dark:bg-indigo-600 text-white font-black rounded-[2rem] text-[10px] uppercase tracking-[0.3em] shadow-2xl hover:bg-slate-900 dark:hover:bg-indigo-700 transition-all"
                       >
-                        Creează Eveniment
+                        Create Event
                       </button>
                     </div>
                   </form>
@@ -507,7 +530,7 @@ export default function CommunityPage() {
             </AnimatePresence>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {meetings.map((meet) => (
+              {filteredMeetings.map((meet) => (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -529,7 +552,7 @@ export default function CommunityPage() {
                       </div>
                       <div className="flex items-center gap-2 text-[var(--text-muted)] text-[10px] font-black uppercase tracking-widest">
                         <Users className="w-4 h-4 text-indigo-500" />
-                        {meet.participants.length} Participanți
+                        {meet.participants.length} Participants
                       </div>
                     </div>
                     <h4 className="text-2xl font-black text-[var(--text-main)] mb-4 tracking-tight uppercase group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
@@ -541,7 +564,7 @@ export default function CommunityPage() {
                           <Clock className="w-5 h-5" />
                         </div>
                         {format(meet.dateTime, "EEEE, d MMM - HH:mm", {
-                          locale: ro,
+                          locale: enUS,
                         })}
                       </div>
                       <div className="flex items-center gap-4 text-sm text-[var(--text-main)] font-bold">
@@ -585,14 +608,14 @@ export default function CommunityPage() {
                         }
                         className="px-8 py-4 glass border-rose-100 dark:border-rose-900/40 text-rose-500 dark:text-rose-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all opacity-80"
                       >
-                        Anulează
+                        Leave
                       </button>
                     ) : (
                       <button
                         onClick={() => joinMeeting(meet.id, profile?.uid || "")}
                         className="px-8 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-800 dark:hover:bg-indigo-700 transition-all shadow-2xl active:scale-95"
                       >
-                        Participă
+                        Join
                       </button>
                     )}
                   </div>
@@ -600,16 +623,16 @@ export default function CommunityPage() {
               ))}
             </div>
 
-            {meetings.length === 0 && (
+            {filteredMeetings.length === 0 && (
               <div className="text-center py-24 glass rounded-[4rem] opacity-60">
                 <div className="w-24 h-24 bg-[var(--bg-app)] rounded-full flex items-center justify-center mx-auto mb-8 text-[var(--text-muted)] animate-float opacity-20">
                   <Calendar className="w-12 h-12" />
                 </div>
                 <p className="text-[var(--text-main)] font-black text-xl uppercase tracking-widest opacity-40">
-                  Niciun eveniment programat
+                  No Scheduled Events
                 </p>
                 <p className="text-[var(--text-muted)] font-medium mt-2 opacity-40">
-                  Creează tu prima sesiune de studiu colaborativ.
+                  Create the first collaborative study session yourself.
                 </p>
               </div>
             )}

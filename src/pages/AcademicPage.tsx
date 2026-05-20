@@ -19,10 +19,12 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
+import { useSearch } from "../context/SearchContext";
 
 export default function AcademicPage() {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
+  const { searchQuery } = useSearch();
   const [courses, setCourses] = useState<Course[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const [newCourse, setNewCourse] = useState({ title: "", description: "" });
@@ -38,9 +40,9 @@ export default function AcademicPage() {
     setIsEnrolling(courseId);
     try {
       await enrollInCourse(user.uid, courseId);
-      toast.success("Te-ai înscris cu succes la curs!");
+      toast.success("Successfully enrolled in the course!");
     } catch (err) {
-      toast.error("Eroare la înscriere.");
+      toast.error("Error during enrollment.");
     } finally {
       setIsEnrolling(null);
     }
@@ -64,11 +66,22 @@ export default function AcademicPage() {
       });
       setIsCreating(false);
       setNewCourse({ title: "", description: "" });
-      toast.success("Curs creat cu succes!");
+      toast.success("Course created successfully!");
     } catch (err) {
-      toast.error("Eroare la crearea cursului.");
+      toast.error("Error creating course.");
     }
   };
+
+  // Filter courses reactively using global searchQuery
+  const filteredCourses = courses.filter((course) => {
+    const query = searchQuery.toLowerCase().trim();
+    if (query === "") return true;
+    return (
+      course.title.toLowerCase().includes(query) ||
+      course.description.toLowerCase().includes(query) ||
+      course.professorName.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <motion.div
@@ -90,8 +103,7 @@ export default function AcademicPage() {
             StudentLink Academic AI
           </h2>
           <p className="text-[var(--text-muted)] font-medium text-xl max-w-xl border-l-2 border-indigo-500/20 pl-6">
-            Sincronizează-te cu universul tău de cursuri și resurse digitale
-            augmentate.
+            Sync with your universe of courses and augmented digital resources.
           </p>
         </div>
 
@@ -103,7 +115,7 @@ export default function AcademicPage() {
             className="flex items-center gap-4 px-10 py-5 bg-slate-800 dark:bg-indigo-600 hover:bg-slate-900 dark:hover:bg-indigo-700 text-white rounded-[2rem] font-black shadow-2xl transition-all uppercase tracking-[0.2em] text-xs relative z-10"
           >
             <Plus className="w-6 h-6 text-indigo-400" />
-            <span>CREEAZĂ CAPITOL</span>
+            <span>CREATE COURSE</span>
           </motion.button>
         )}
       </div>
@@ -125,7 +137,7 @@ export default function AcademicPage() {
                 <Plus className="w-7 h-7" />
               </div>
               <h3 className="text-3xl font-black text-[var(--text-main)] tracking-tighter uppercase">
-                Inițiere Capitol Academic
+                Initiate Academic Course
               </h3>
             </div>
 
@@ -135,13 +147,13 @@ export default function AcademicPage() {
             >
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em] ml-6">
-                  Titlu Curs
+                  Course Title
                 </label>
                 <input
                   type="text"
                   required
                   className="w-full px-8 py-5 bg-[var(--bg-app)]/60 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm uppercase tracking-tight transition-all text-[var(--text-main)]"
-                  placeholder="ex: Sisteme Cloud & Inteligență Artificială"
+                  placeholder="e.g., Cloud Systems & Artificial Intelligence"
                   value={newCourse.title}
                   onChange={(e) =>
                     setNewCourse({ ...newCourse, title: e.target.value })
@@ -150,12 +162,12 @@ export default function AcademicPage() {
               </div>
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.3em] ml-6">
-                  Descriere
+                  Description
                 </label>
                 <textarea
                   required
                   className="w-full px-8 py-5 bg-[var(--bg-app)]/60 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-medium h-40 resize-none transition-all shadow-inner text-[var(--text-main)]"
-                  placeholder="Definește scopul și rezultatele învățării..."
+                  placeholder="Define the purpose and learning outcomes..."
                   value={newCourse.description}
                   onChange={(e) =>
                     setNewCourse({ ...newCourse, description: e.target.value })
@@ -168,13 +180,13 @@ export default function AcademicPage() {
                   onClick={() => setIsCreating(false)}
                   className="px-10 py-5 text-[var(--text-muted)] font-black uppercase tracking-[0.3em] text-[10px] hover:text-indigo-600 transition-all"
                 >
-                  Abandonează
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-12 py-5 bg-slate-800 dark:bg-indigo-600 text-white font-black rounded-[2rem] shadow-2xl hover:bg-slate-900 dark:hover:bg-indigo-700 transition-all active:scale-95 uppercase tracking-[0.3em] text-[10px]"
                 >
-                  Creează Cursul
+                  Create Course
                 </button>
               </div>
             </form>
@@ -183,7 +195,7 @@ export default function AcademicPage() {
       </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {courses.map((course, idx) => (
+        {filteredCourses.map((course, idx) => (
           <motion.div
             key={course.id}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -225,8 +237,8 @@ export default function AcademicPage() {
                   className="w-full py-6 glass bg-indigo-50/50 dark:bg-indigo-900/40 hover:bg-slate-800 dark:hover:bg-indigo-600 text-indigo-600 dark:text-indigo-400 hover:text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 border border-indigo-100 dark:border-indigo-900/40 shadow-2xl"
                 >
                   {isEnrolling === course.id
-                    ? "Se procesează..."
-                    : "ÎNSCRIERE CURS"}
+                    ? "Processing..."
+                    : "ENROLL IN COURSE"}
                   <Plus className="w-5 h-5 text-indigo-400 dark:text-white" />
                 </button>
               )}
@@ -242,7 +254,7 @@ export default function AcademicPage() {
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">
-                      Profesor Coordonator
+                      Coordinating Professor
                     </p>
                     <p className="text-xs font-black text-[var(--text-main)] uppercase tracking-tight truncate max-w-[140px]">
                       {course.professorName}
@@ -263,7 +275,7 @@ export default function AcademicPage() {
         ))}
       </div>
 
-      {courses.length === 0 && !isCreating && (
+      {filteredCourses.length === 0 && !isCreating && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -271,10 +283,10 @@ export default function AcademicPage() {
         >
           <Book className="w-20 h-20 text-[var(--text-muted)] opacity-20 mx-auto mb-8 animate-float" />
           <h3 className="text-2xl font-black text-[var(--text-muted)] uppercase tracking-[0.4em] leading-tight opacity-40">
-            Sistemul StudentLink așteaptă impulsul tău...
+            The StudentLink system is waiting for your impulse...
           </h3>
           <p className="text-[var(--text-muted)] font-medium mt-2">
-            Creează prima resursă sau revino pentru noi date.
+            Create the first resource or check back later for new data.
           </p>
         </motion.div>
       )}

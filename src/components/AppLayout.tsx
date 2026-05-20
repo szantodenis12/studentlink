@@ -21,13 +21,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../context/ThemeContext";
+import { useSearch } from "../context/SearchContext";
 import { auth } from "../services/firebase";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../lib/utils";
 import { useEffect, useState } from "react";
 import { getNotifications, markAsRead, markAllAsRead, Notification, deleteNotification } from "../services/notificationService";
 import { formatDistanceToNow } from "date-fns";
-import { ro } from "date-fns/locale";
 import { toast } from "sonner";
 import logo from "../assets/logo.png";
 
@@ -38,6 +38,7 @@ interface LayoutProps {
 export default function AppLayout({ children }: LayoutProps) {
   const { profile, user } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { searchQuery, setSearchQuery } = useSearch();
   const location = useLocation();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -56,7 +57,7 @@ export default function AppLayout({ children }: LayoutProps) {
     try {
       await markAllAsRead(notifications);
     } catch (err) {
-      toast.error("Eroare la marcarea notificărilor ca citite.");
+      toast.error("Error marking notifications as read.");
     }
   };
 
@@ -65,16 +66,16 @@ export default function AppLayout({ children }: LayoutProps) {
     try {
       await deleteNotification(id);
     } catch (err) {
-      toast.error("Eroare la ștergerea notificării.");
+      toast.error("Error deleting notification.");
     }
   };
 
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
     { name: "Academic", path: "/academic", icon: BookOpen },
-    { name: "Comunitate", path: "/community", icon: Users, studentOnly: true },
-    { name: "Mentorat", path: "/mentorship", icon: GraduationCap },
-    { name: "Profil", path: "/profile", icon: User },
+    { name: "Community", path: "/community", icon: Users, studentOnly: true },
+    { name: "Mentorship", path: "/mentorship", icon: GraduationCap },
+    { name: "Profile", path: "/profile", icon: User },
   ];
 
   if (profile?.role === "admin") {
@@ -108,7 +109,7 @@ export default function AppLayout({ children }: LayoutProps) {
         </div>
 
         <nav className="flex-1 px-6 space-y-2 overflow-y-auto custom-scrollbar">
-          <p className="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sistem</p>
+          <p className="px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System</p>
           {menuItems.map((item) => {
             if (item.studentOnly && profile?.role === "professor") return null;
 
@@ -149,10 +150,10 @@ export default function AppLayout({ children }: LayoutProps) {
                  <div className="flex items-center gap-2 text-indigo-200 font-black text-[9px] uppercase tracking-widest mb-2">
                     <Zap className="w-3 h-3 text-amber-400" /> Career Plus AI
                  </div>
-                 <p className="text-white text-xs font-bold leading-relaxed mb-4">Găsește jobul ideal folosind algoritmul nostru.</p>
+                 <p className="text-white text-xs font-bold leading-relaxed mb-4">Find the ideal job using our algorithm.</p>
                  <Link to="/profile" className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
                     START <ChevronRight className="w-3 h-3" />
-                 </Link>
+                  </Link>
               </div>
            </motion.div>
 
@@ -162,7 +163,7 @@ export default function AppLayout({ children }: LayoutProps) {
                  className="flex items-center gap-4 w-full px-4 py-3 rounded-xl text-slate-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all group"
                >
                  <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                 <span className="text-[13px] font-bold tracking-tight">Ieșire Cont</span>
+                 <span className="text-[13px] font-bold tracking-tight">Sign Out</span>
                </button>
            </div>
         </div>
@@ -174,13 +175,15 @@ export default function AppLayout({ children }: LayoutProps) {
         <header className="h-16 glass border-b border-slate-200/40 dark:border-slate-800/40 flex items-center justify-between px-6 sticky top-0 z-30">
           <div className="flex items-center gap-8 flex-1">
             <h1 className="text-2xl font-black text-[var(--text-main)] font-display tracking-tight hidden lg:block">
-              {menuItems.find(i => i.path === location.pathname)?.name || "Pagina"}
+              {menuItems.find(i => i.path === location.pathname)?.name || "Page"}
             </h1>
             
             <div className="relative max-w-sm w-full group">
                <input 
                   type="text" 
-                  placeholder="Caută în platforma StudentLink..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search in StudentLink..."
                   className="w-full pl-12 pr-4 py-3.5 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-[1.25rem] focus:bg-[var(--bg-app)] focus:border-indigo-500/20 focus:shadow-xl transition-all outline-none text-sm font-bold shadow-inner"
                />
                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-4 group-focus-within:text-indigo-600 transition-colors" />
@@ -232,15 +235,15 @@ export default function AppLayout({ children }: LayoutProps) {
                          >
                            <div className="p-8 border-b border-[var(--glass-border)] flex items-center justify-between bg-[var(--bg-app)]/50">
                              <div>
-                                <h3 className="font-display font-black text-[var(--text-main)] tracking-tight uppercase text-sm">Notificări</h3>
-                                <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest leading-none mt-1">Sistem Activ • {unreadCount} noi</p>
+                                <h3 className="font-display font-black text-[var(--text-main)] tracking-tight uppercase text-sm">Notifications</h3>
+                                <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest leading-none mt-1">System Active • {unreadCount} new</p>
                              </div>
                              {unreadCount > 0 && (
                                <button 
                                 onClick={handleMarkAllRead}
                                 className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 hover:text-white dark:hover:text-white uppercase tracking-widest bg-[var(--bg-app)] hover:bg-indigo-600 px-4 py-2 rounded-xl border border-[var(--glass-border)] transition-all active:scale-95"
                                >
-                                 Golește tot
+                                 Clear all
                                </button>
                              )}
                            </div>
@@ -284,7 +287,7 @@ export default function AppLayout({ children }: LayoutProps) {
                                       <div className="flex items-center gap-2 pt-1">
                                         <Clock className="w-3 h-3 text-slate-300" />
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
-                                          {n.createdAt ? formatDistanceToNow(n.createdAt.toDate(), { addSuffix: true, locale: ro }) : 'chiar acum'}
+                                          {n.createdAt ? formatDistanceToNow(n.createdAt.toDate(), { addSuffix: true }) : 'just now'}
                                         </span>
                                       </div>
                                    </div>
@@ -302,15 +305,15 @@ export default function AppLayout({ children }: LayoutProps) {
                                    <div className="w-20 h-20 glass bg-[var(--bg-app)]/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-[var(--text-muted)] border border-[var(--glass-border)] group">
                                       <Bell className="w-10 h-10 group-hover:rotate-12 transition-transform" />
                                    </div>
-                                   <h4 className="text-[var(--text-muted)] font-black uppercase text-sm tracking-[0.2em]">Silențios</h4>
-                                   <p className="text-[var(--text-muted)] text-xs mt-2 font-medium">Ești la zi cu toate fluxurile de date.</p>
+                                   <h4 className="text-[var(--text-muted)] font-black uppercase text-sm tracking-[0.2em]">Quiet</h4>
+                                   <p className="text-[var(--text-muted)] text-xs mt-2 font-medium">You are up to date with all system data streams.</p>
                                 </div>
                              )}
                            </div>
 
                            {notifications.length > 0 && (
                              <div className="p-5 bg-slate-50/50 border-t border-slate-100 text-center">
-                                <button className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-indigo-600 transition-all">Vezi tot istoricul sistem</button>
+                                <button className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] hover:text-indigo-600 transition-all">View all system history</button>
                              </div>
                            )}
                          </motion.div>
@@ -349,7 +352,7 @@ export default function AppLayout({ children }: LayoutProps) {
                  <div className="flex items-center gap-1.5">
                     <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", profile?.role === 'professor' ? 'bg-indigo-500' : 'bg-green-500')}></div>
                     <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest leading-none">
-                      {profile?.role === 'student' ? 'Student' : profile?.role === 'professor' ? 'Profesor' : 'Admin'}
+                      {profile?.role === 'student' ? 'Student' : profile?.role === 'professor' ? 'Professor' : 'Admin'}
                     </p>
                  </div>
                </div>

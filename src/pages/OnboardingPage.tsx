@@ -51,11 +51,11 @@ export default function OnboardingPage() {
         profileSetup: true
       });
 
-      toast.success("Profil completat cu succes!");
+      toast.success("Profile completed successfully!");
       navigate("/");
     } catch (err) {
       console.error(err);
-      toast.error("Eroare la salvarea profilului.");
+      toast.error("Error saving your profile.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ export default function OnboardingPage() {
                 {step > s ? <Check className="w-5 h-5" /> : s}
               </div>
               <span className={`text-[10px] font-black uppercase tracking-tighter ${step === s ? "text-indigo-600" : "text-[var(--text-muted)]"}`}>
-                {s === 1 ? "Identitate" : s === 2 ? "Academic" : "Finalizare"}
+                {s === 1 ? "Identity" : s === 2 ? "Academic" : "Completion"}
               </span>
               {s < 3 && (
                 <div className={`absolute left-1/2 top-5 w-full h-[2px] -z-0 ${step > s ? "bg-green-500" : "bg-[var(--glass-border)]"}`}></div>
@@ -97,8 +97,8 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-8 text-center">
               <div>
-                <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Hai să ne cunoaștem!</h2>
-                <p className="text-[var(--text-muted)] mt-2 font-medium">Cum vrei să apari colegilor tăi?</p>
+                <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Let's get to know you!</h2>
+                <p className="text-[var(--text-muted)] mt-2 font-medium">How would you like to appear to your peers?</p>
               </div>
 
               <div className="relative w-32 h-32 mx-auto">
@@ -117,7 +117,7 @@ export default function OnboardingPage() {
 
               <div className="space-y-4 text-left">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Nume Complet</label>
+                  <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Full Name</label>
                   <input 
                     type="text" 
                     className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
@@ -132,7 +132,7 @@ export default function OnboardingPage() {
                 disabled={!formData.fullName}
                 className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
               >
-                Continuă <ArrowRight className="w-5 h-5" />
+                Continue <ArrowRight className="w-5 h-5" />
               </button>
             </div>
           )}
@@ -140,20 +140,20 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-8">
               <div className="text-center">
-                <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Detalii Academice</h2>
-                <p className="text-[var(--text-muted)] mt-2 font-medium">Unde studiezi sau ce predai?</p>
+                <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Academic Details</h2>
+                <p className="text-[var(--text-muted)] mt-2 font-medium">Where do you study or what do you teach?</p>
               </div>
 
               <div className="space-y-6">
                 <div className="space-y-2">
                    <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
-                     {profile.role === 'student' ? 'Facultate / Specializare' : 'Departament / Catedră'}
+                     {profile.role === 'student' ? 'Faculty / Specialization' : 'Department / Chair'}
                    </label>
                    <div className="relative">
                       <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
                       <input 
                         type="text" 
-                        placeholder="e.g. Facultatea de Matematică și Informatică"
+                        placeholder="e.g. Faculty of Mathematics and Computer Science"
                         className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                         value={formData.specialization}
                         onChange={(e) => setFormData({...formData, specialization: e.target.value})}
@@ -162,11 +162,11 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="space-y-2">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Descriere Scurtă (Bio)</label>
+                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Short Description (Bio)</label>
                    <div className="relative">
                       <FileText className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
                       <textarea 
-                        placeholder="Spune-ne câteva cuvinte despre tine..."
+                        placeholder="Tell us a few words about yourself..."
                         className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] min-h-[120px]"
                         value={formData.bio}
                         onChange={(e) => setFormData({...formData, bio: e.target.value})}
@@ -180,14 +180,14 @@ export default function OnboardingPage() {
                   onClick={() => setStep(1)}
                   className="flex-1 py-5 bg-slate-100 text-slate-500 rounded-3xl font-bold hover:bg-slate-200 transition-all"
                 >
-                  Înapoi
+                  Back
                 </button>
                 <button 
                   onClick={() => setStep(3)}
                   disabled={!formData.specialization}
                   className="flex-[2] py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  Continuă <ArrowRight className="w-5 h-5" />
+                  Continue <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -200,10 +200,10 @@ export default function OnboardingPage() {
                </div>
                
                <div>
-                 <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Totul este gata!</h2>
+                 <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Everything is ready!</h2>
                  <p className="text-[var(--text-muted)] mt-4 font-medium px-8">
-                   Ești acum parte din comunitatea <span className="text-indigo-600 font-black">STUDENTLINK</span>. 
-                   Profilul tău este complet și poți accesa toate funcționalitățile platformei.
+                   You are now part of the <span className="text-indigo-600 font-black">STUDENTLINK</span> community. 
+                   Your profile is complete and you can access all features of the platform.
                  </p>
                </div>
 
@@ -212,14 +212,14 @@ export default function OnboardingPage() {
                   onClick={() => setStep(2)}
                   className="flex-1 py-5 bg-slate-100 text-slate-500 rounded-3xl font-bold hover:bg-slate-200 transition-all"
                 >
-                  Revizuiește
+                  Review
                 </button>
                 <button 
                   onClick={handleComplete}
                   disabled={loading}
                   className="flex-[2] py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {loading ? "Se salvează..." : "Intră în Platformă"}
+                  {loading ? "Saving..." : "Enter Platform"}
                 </button>
               </div>
             </div>

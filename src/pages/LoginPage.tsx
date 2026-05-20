@@ -46,7 +46,7 @@ export default function LoginPage() {
       
       if (!docSnap.exists()) {
         await setDoc(docRef, {
-          fullName: user.displayName || "Utilizator Nou",
+          fullName: user.displayName || "New User",
           email: user.email,
           role: role,
           photoURL: user.photoURL,
@@ -54,11 +54,11 @@ export default function LoginPage() {
           createdAt: new Date().toISOString()
         });
       }
-      toast.success("Autentificare reușită!");
+      toast.success("Authentication successful!");
     } catch (err: any) {
       console.error("Google Auth Error:", err.code, err.message, err);
-      setError("Autentificarea cu Google a eșuat. Verifică consola pentru detalii.");
-      toast.error("Eroare la autentificare.");
+      setError("Google sign-in failed. Check the console for details.");
+      toast.error("Authentication error.");
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ export default function LoginPage() {
       if (isRegistering) {
         // 1. Validation check for name
         if (!fullName.trim()) {
-           setError("Vă rugăm să introduceți numele complet.");
+           setError("Please enter your full name.");
            setLoading(false);
            return;
         }
@@ -84,7 +84,7 @@ export default function LoginPage() {
           const secretKey = "prof-secret-2024";
           
           if (professorKey.trim().toLowerCase() !== secretKey.toLowerCase()) {
-            setError("Codul de validare profesor este incorect.");
+            setError("The professor validation code is incorrect.");
             setLoading(false);
             return;
           }
@@ -95,7 +95,7 @@ export default function LoginPage() {
           // Warning but optional for demo purposes, so we'll just log or keep it loose for now
           // If you want it strict: 
           // setError("Profesorii trebuie să folosească o adresă @prof.studentlink.ro");
-          // setLoading(false); return;
+          // setLoading-false; return;
         }
 
         const result = await createUserWithEmailAndPassword(auth, email, password);
@@ -106,15 +106,15 @@ export default function LoginPage() {
           profileSetup: false,
           createdAt: new Date().toISOString()
         });
-        toast.success("Cont creat cu succes!");
+        toast.success("Account created successfully!");
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        toast.success("Bine ai revenit!");
+        toast.success("Welcome back!");
       }
     } catch (err: any) {
       console.error(err);
-      setError(isRegistering ? "Crearea contului a eșuat. Verifică datele." : "Email sau parolă incorectă.");
-      toast.error("Operațiune eșuată.");
+      setError(isRegistering ? "Failed to create account. Please check your inputs." : "Incorrect email or password.");
+      toast.error("Operation failed.");
     } finally {
       setLoading(false);
     }
@@ -152,10 +152,10 @@ export default function LoginPage() {
           >
 
             <h2 className="text-6xl lg:text-8xl font-black text-white font-display leading-[1.1] tracking-tighter uppercase">
-               Arhitectură<br />Academică<br />Digitală.
+               Digital<br />Academic<br />Architecture.
             </h2>
             <p className="text-slate-400 text-lg lg:text-xl font-medium leading-relaxed border-l-4 border-indigo-500/50 pl-8">
-              Ecosistemul tău de învățare augmentată, unde performanța este definită prin algoritmi de succes.
+              Your augmented learning ecosystem, where performance is defined by algorithms of success.
             </p>
           </motion.div>
         </div>
@@ -163,15 +163,15 @@ export default function LoginPage() {
         <div className="relative z-10 grid grid-cols-2 gap-12 border-t border-white/5 pt-12">
            <div className="space-y-3">
                <div className="flex items-center gap-3 text-indigo-400 font-black text-[10px] uppercase tracking-[0.2em]">
-                  <CheckCircle2 className="w-4 h-4" /> Asistent Academic
+                  <CheckCircle2 className="w-4 h-4" /> Academic Assistant
                </div>
-               <p className="text-slate-500 text-sm font-medium leading-tight">Integrare completă între resurse și testări inteligente.</p>
+               <p className="text-slate-500 text-sm font-medium leading-tight">Complete integration between resources and smart testing.</p>
            </div>
            <div className="space-y-3">
                <div className="flex items-center gap-3 text-emerald-400 font-black text-[10px] uppercase tracking-[0.2em]">
-                  <ShieldCheck className="w-4 h-4" /> Evoluție Carieră
+                  <ShieldCheck className="w-4 h-4" /> Career Evolution
                </div>
-              <p className="text-slate-500 text-sm font-medium leading-tight">Validare profesională bazată pe date reale.</p>
+              <p className="text-slate-500 text-sm font-medium leading-tight">Professional validation based on real-world data.</p>
            </div>
         </div>
       </div>
@@ -189,10 +189,10 @@ export default function LoginPage() {
 
           <div className="space-y-3">
             <h3 className="text-5xl font-black text-[var(--text-main)] font-display tracking-tighter uppercase">
-              {isRegistering ? "Înregistrare" : "Conectare"}
+              {isRegistering ? "Sign Up" : "Sign In"}
             </h3>
             <p className="text-[var(--text-muted)] font-medium tracking-tight text-lg">
-              {isRegistering ? "Creează-ți profilul academic acum." : "Intră în spațiul tău de studiu."}
+              {isRegistering ? "Create your academic profile now." : "Enter your study space."}
             </p>
           </div>
 
@@ -206,11 +206,11 @@ export default function LoginPage() {
                   className="space-y-8"
                 >
                   <div className="group space-y-3">
-                    <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-600 transition-colors">Identitate Completă</label>
+                    <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-600 transition-colors">Full Identity</label>
                     <input
                       type="text"
                       className="w-full px-8 py-5 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 uppercase tracking-tight text-[var(--text-main)]"
-                      placeholder="e.g. Andrei Ionescu"
+                      placeholder="e.g. John Doe"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
@@ -218,11 +218,11 @@ export default function LoginPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">Tip de acces:</label>
+                    <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">Access Type:</label>
                     <div className="grid grid-cols-2 gap-4">
                       {[
                         { id: 'student', name: 'Student', icon: GraduationCap },
-                        { id: 'professor', name: 'Profesor', icon: BookOpen }
+                        { id: 'professor', name: 'Professor', icon: BookOpen }
                       ].map((r) => (
                         <button
                           key={r.id}
@@ -252,12 +252,12 @@ export default function LoginPage() {
                         className="space-y-3 overflow-hidden"
                       >
                         <label className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                           <ShieldCheck className="w-4 h-4" /> Criptare Profesor
+                           <ShieldCheck className="w-4 h-4" /> Professor Validation
                         </label>
                         <input
                           type="password"
                           className="w-full px-8 py-5 bg-indigo-50/50 dark:bg-indigo-900/20 border-2 border-indigo-100 dark:border-indigo-900/40 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-black text-indigo-700 dark:text-indigo-400 shadow-inner tracking-[0.5em] placeholder:tracking-normal placeholder:font-medium uppercase"
-                          placeholder="Cod Validare"
+                          placeholder="Validation Code"
                           value={professorKey}
                           onChange={(e) => setProfessorKey(e.target.value)}
                           required={role === 'professor'}
@@ -274,7 +274,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 className="w-full px-8 py-5 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 text-[var(--text-main)]"
-                placeholder="nume@universitate.ro"
+                placeholder="name@university.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -283,8 +283,8 @@ export default function LoginPage() {
 
             <div className="space-y-3 group">
               <div className="flex justify-between items-center px-1">
-                 <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] group-focus-within:text-indigo-600 transition-colors">Parolă</label>
-                 {!isRegistering && <button type="button" className="text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:underline">Ai uitat parola?</button>}
+                 <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] group-focus-within:text-indigo-600 transition-colors">Password</label>
+                 {!isRegistering && <button type="button" className="text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:underline">Forgot password?</button>}
               </div>
               <input
                 type="password"
@@ -310,7 +310,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-6 bg-slate-800 dark:bg-indigo-600 hover:bg-slate-900 dark:hover:bg-indigo-700 text-white rounded-[2rem] font-black shadow-2xl shadow-slate-200 dark:shadow-none transition-all transform hover:-translate-y-2 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4 text-[12px] uppercase tracking-[0.3em]"
             >
-              {loading ? "Se conectează..." : isRegistering ? "Creează Contul" : "Intră în Cont"}
+              {loading ? "Connecting..." : isRegistering ? "Create Account" : "Sign In"}
               {!loading && <ArrowRight className="w-5 h-5 text-indigo-400 dark:text-white" />}
             </button>
           </form>
@@ -321,7 +321,7 @@ export default function LoginPage() {
                 <div className="w-full border-t border-slate-100 dark:border-slate-800 shadow-inner"></div>
               </div>
               <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.4em]">
-                <span className="px-6 bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors">Sursă Alternativă</span>
+                <span className="px-6 bg-[var(--bg-app)] text-[var(--text-muted)] transition-colors">Alternative Source</span>
               </div>
             </div>
 
@@ -333,17 +333,17 @@ export default function LoginPage() {
               <div className="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all">
                 <Chrome className="w-4 h-4 transition-transform group-hover:scale-110" />
               </div>
-              Acces prin Google
+              Sign in with Google
             </button>
           </div>
 
           <p className="text-center text-[var(--text-muted)] font-black text-[10px] pt-4 uppercase tracking-[0.2em]">
-            {isRegistering ? "Ai deja cont?" : "Nu ai cont?"}{" "}
+            {isRegistering ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => setIsRegistering(!isRegistering)}
               className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 border-b border-indigo-100 dark:border-indigo-900/40 inline-block ml-2"
             >
-              {isRegistering ? "Conecteară-te" : "Creează cont"}
+              {isRegistering ? "Sign In" : "Create one"}
             </button>
           </p>
         </div>

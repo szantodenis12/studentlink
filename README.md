@@ -2,19 +2,16 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# StudentLink
 
-This contains everything you need to run your app locally.
+Platformă de studiu și colaborare pentru studenți.
 
-View your app in AI Studio: https://ai.studio/apps/6bc34f3c-97d6-4045-88c8-54e2866e2c4d
+## Rulare locală
 
-## Run Locally
+**Cerințe preliminare:** Node.js
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
+1. Instalează dependențele:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Configurează variabilele de mediu în fișierul `.env` (vezi `.env.example`).
+3. Pornește serverul de dezvoltare:
    `npm run dev`

@@ -78,7 +78,7 @@ async function startServer() {
                 window.location.href = '/';
               }
             </script>
-            <p>Autentificare reușită! Fereastra se va închide...</p>
+            <p>Authentication successful! This window will close...</p>
           </body>
         </html>
       `);
@@ -144,16 +144,16 @@ async function startServer() {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
       const model = "gemini-3-flash-preview";
       const gradesStr = Object.entries(grades).map(([subject, grade]) => `${subject}: ${grade}`).join(", ");
-      const prompt = `Analizează performanța academică a studentului ${studentName}.
-      Note: ${gradesStr}
-      Puncte forte: ${strengths.join(", ")}
+      const prompt = `Analyze the academic performance of the student ${studentName}.
+      Grades: ${gradesStr}
+      Strengths: ${strengths.join(", ")}
       
-      Oferă recomandări personalizate de carieră și joburi în limba română (aproximativ 250 cuvinte). 
+      Provide personalized career recommendations and job suggestions in English (around 250 words). 
       Include:
-      1. Top 3 domenii potrivite.
-      2. Tipuri de roluri specifice.
-      3. Sugestii pentru dezvoltare ulterioară (skills de învățat).
-      Folosește un ton încurajator și profesional.`;
+      1. Top 3 suitable fields.
+      2. Specific types of roles.
+      3. Suggestions for further development (skills to learn).
+      Use an encouraging and professional tone.`;
 
       const response = await ai.models.generateContent({
         model,
@@ -172,15 +172,15 @@ async function startServer() {
       const { GoogleGenAI, Type } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
       const model = "gemini-3-flash-preview";
-      const prompt = `Ești un asistent academic expert. Generează un test grilă (quiz) în limba română pentru cursul "${courseTitle}".
-      Descriere: ${description}
-      Materiale: ${materialsText}
+      const prompt = `You are an expert academic assistant. Generate a multiple-choice quiz in English for the course "${courseTitle}".
+      Description: ${description}
+      Materials: ${materialsText}
       
-      Cerințe:
-      - Generează 5 întrebări relevante.
-      - Fiecare întrebare trebuie să aibă 4 variante de răspuns.
-      - Specifică indexul corect (0-3).
-      - Testul trebuie să fie echilibrat ca dificultate.`;
+      Requirements:
+      - Generate exactly 5 relevant questions.
+      - Each question must have 4 options.
+      - Specify the correct index (0-3).
+      - The quiz should have a balanced difficulty.`;
 
       const response = await ai.models.generateContent({
         model,

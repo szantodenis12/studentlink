@@ -28,13 +28,13 @@ export default function AdminPage() {
   const handleDeletePost = async (id: string) => {
     try {
       await deleteDoc(doc(db, "posts", id));
-      toast.success("Postare moderată/ștearsă.");
+      toast.success("Post moderated/deleted successfully.");
     } catch (err) {
-      toast.error("Eroare la ștergere.");
+      toast.error("Error deleting post.");
     }
   };
 
-  if (profile?.role !== "admin") return <div className="p-12 text-center text-red-500 font-bold">Acces Interzis.</div>;
+  if (profile?.role !== "admin") return <div className="p-12 text-center text-red-500 font-bold">Access Denied.</div>;
 
   return (
     <div className="space-y-8">
@@ -43,15 +43,15 @@ export default function AdminPage() {
             <ShieldAlert className="w-10 h-10" />
          </div>
          <div>
-            <h2 className="text-3xl font-bold">Panou Administrare</h2>
-            <p className="text-indigo-200 font-medium">Moderare conținut și management utilizatori</p>
+            <h2 className="text-3xl font-bold">Administration Panel</h2>
+            <p className="text-indigo-200 font-medium">Content moderation and user management</p>
          </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
          {/* Users list */}
          <div className="glass p-6 rounded-3xl">
-            <h3 className="text-lg font-bold text-[var(--text-main)] mb-6 uppercase tracking-widest text-xs">Utilizatori Înregistrați ({users.length})</h3>
+            <h3 className="text-lg font-bold text-[var(--text-main)] mb-6 uppercase tracking-widest text-xs">Registered Users ({users.length})</h3>
             <div className="space-y-3">
                {users.map(u => (
                  <div key={u.id} className="flex items-center justify-between p-3 bg-[var(--bg-app)]/50 rounded-xl border border-[var(--glass-border)]">
@@ -72,7 +72,7 @@ export default function AdminPage() {
 
          {/* Posts moderation */}
          <div className="glass p-6 rounded-3xl">
-            <h3 className="text-lg font-bold text-[var(--text-main)] mb-6 uppercase tracking-widest text-xs">Moderare Postări ({posts.length})</h3>
+            <h3 className="text-lg font-bold text-[var(--text-main)] mb-6 uppercase tracking-widest text-xs">Post Moderation ({posts.length})</h3>
             <div className="space-y-4">
                {posts.map(p => (
                  <div key={p.id} className="p-4 bg-[var(--bg-app)]/50 rounded-xl border border-[var(--glass-border)] space-y-3">
@@ -91,7 +91,7 @@ export default function AdminPage() {
                     <p className="text-xs text-slate-600 line-clamp-2">"{p.content}"</p>
                  </div>
                ))}
-               {posts.length === 0 && <p className="text-center py-6 text-slate-400 font-bold text-xs uppercase">Nicio postare de moderat</p>}
+               {posts.length === 0 && <p className="text-center py-6 text-slate-400 font-bold text-xs uppercase">No posts to moderate</p>}
             </div>
          </div>
       </div>
