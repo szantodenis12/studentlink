@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import { useAuth } from "../hooks/useAuth";
@@ -146,33 +146,19 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: forgotEmail })
-      });
-
-      let data: any = {};
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        data = { error: text || "An unexpected error occurred." };
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || "An error occurred while sending the email.");
-      }
-
-      setForgotSuccess(data.message || "Reset link has been sent to your email!");
-      toast.success("Email sent successfully!");
+      await sendPasswordResetEmail(auth, forgotEmail);
+      setForgotSuccess("Link-ul de resetare a parolei a fost trimis pe e-mail!");
+      toast.success("E-mail trimis cu succes!");
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "An error occurred during password recovery.");
-      toast.error("Failed to send.");
+      if (err.code === "auth/user-not-found") {
+        setError("Acest e-mail nu este înregistrat în platformă.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Adresa de e-mail introdusă nu este validă.");
+      } else {
+        setError("A apărut o eroare la trimiterea e-mailului. Vă rugăm să încercați din nou.");
+      }
+      toast.error("Trimiterea a eșuat.");
     } finally {
       setForgotLoading(false);
     }
