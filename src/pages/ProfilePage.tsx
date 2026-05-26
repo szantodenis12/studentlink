@@ -294,7 +294,10 @@ export default function ProfilePage() {
                {profile.role === 'professor' ? 'Expertise Modules' : 'Performance Areas'}
              </h3>
              <div className="flex flex-wrap gap-3">
-               {(profile.role === 'professor' ? (profile.mentorshipSubjects || ["Software Architecture", "AI & ML", "Project Management"]) : (profile.academicData?.strengths || ["Algorithms", "Data Analysis", "Leadership"])).map(s => (
+               {(profile.role === 'professor' 
+                  ? (profile.mentorshipSubjects && profile.mentorshipSubjects.length > 0 ? profile.mentorshipSubjects : ["Software Architecture", "AI & ML", "Project Management"]) 
+                  : (profile.academicData?.strengths && profile.academicData.strengths.length > 0 ? profile.academicData.strengths : ["Algorithms", "Data Analysis", "Leadership"])
+                ).map(s => (
                  <span key={s} className="px-5 py-2.5 glass text-[var(--text-main)] rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-all">
                    <Zap className="w-3.5 h-3.5 text-indigo-500" /> {s}
                  </span>

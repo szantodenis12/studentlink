@@ -22,7 +22,7 @@ export interface Booking {
   subject: string;
   dateTime: Date;
   price: number;
-  status: 'pending' | 'confirmed' | 'completed';
+  status: 'pending' | 'confirmed' | 'rejected' | 'completed';
 }
 
 export interface Review {
@@ -36,7 +36,11 @@ export interface Review {
 }
 
 export const getMentors = async (subject?: string) => {
-  let q = query(collection(db, "users"), where("role", "==", "professor"));
+  let q = query(
+    collection(db, "users"), 
+    where("role", "==", "professor"),
+    where("isMentor", "==", true)
+  );
   
   const snapshot = await getDocs(q);
   const mentors = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile));
@@ -53,6 +57,48 @@ export const bookSession = async (booking: Omit<Booking, 'id' | 'status'>) => {
     ...booking,
     status: 'pending',
     createdAt: serverTimestamp()
+  });
+};
+
+export const getStudentBookings = (studentId: string, callback: (bookings: Booking[]) => void) => {
+  const q = query(collection(db, "bookings"), where("studentId", "==", studentId));
+  return onSnapshot(q, (snapshot) => {
+    const bookings = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        dateTime: data.dateTime?.toDate?.() || new Date(data.dateTime)
+      } as Booking;
+    });
+    callback(bookings);
+  });
+};
+
+export const getProfessorBookings = (professorId: string, callback: (bookings: Booking[]) => void) => {
+  const q = query(collection(db, "bookings"), where("mentorId", "==", professorId));
+  return onSnapshot(q, (snapshot) => {
+    const bookings = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        dateTime: data.dateTime?.toDate?.() || new Date(data.dateTime)
+      } as Booking;
+    });
+    callback(bookings);
+  });
+};
+
+export const updateBookingStatus = async (bookingId: string, status: 'pending' | 'confirmed' | 'rejected' | 'completed') => {
+  return updateDoc(doc(db, "bookings", bookingId), {
+    status
+  });
+};
+
+export const updateBookingDateTime = async (bookingId: string, dateTime: Date) => {
+  return updateDoc(doc(db, "bookings", bookingId), {
+    dateTime
   });
 };
 
@@ -89,4 +135,19 @@ export const addMentorReview = async (review: Omit<Review, 'id' | 'createdAt'>) 
   });
   
   return docRef;
+};
+
+export const updateMentorProfile = async (
+  userId: string,
+  isMentor: boolean,
+  subjects: string[],
+  price: number,
+  bio: string
+) => {
+  return updateDoc(doc(db, "users", userId), {
+    isMentor,
+    mentorshipSubjects: subjects,
+    mentorshipPrice: price,
+    bio
+  });
 };

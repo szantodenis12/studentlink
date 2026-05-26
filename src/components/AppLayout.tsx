@@ -22,11 +22,13 @@ import {
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../context/ThemeContext";
 import { useSearch } from "../context/SearchContext";
-import { auth } from "../services/firebase";
+import { auth, db } from "../services/firebase";
+import { doc, getDoc, collection, query, where, onSnapshot } from "firebase/firestore";
+import { updateBookingStatus } from "../services/mentorshipService";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../lib/utils";
-import { useEffect, useState } from "react";
-import { getNotifications, markAsRead, markAllAsRead, Notification, deleteNotification } from "../services/notificationService";
+import { useEffect, useState, useRef } from "react";
+import { getNotifications, markAsRead, markAllAsRead, Notification, deleteNotification, createNotification } from "../services/notificationService";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import logo from "../assets/logo.png";
@@ -43,6 +45,92 @@ export default function AppLayout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  const [courses, setCourses] = useState<any[]>([]);
+  const [mentors, setMentors] = useState<any[]>([]);
+  const [meetings, setMeetings] = useState<any[]>([]);
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Real-time Firestore subscriptions for global search
+  useEffect(() => {
+    if (!user) return;
+
+    const unsubCourses = onSnapshot(collection(db, "courses"), (snap) => {
+      setCourses(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+
+    const qMentors = query(collection(db, "users"), where("role", "==", "professor"));
+    const unsubMentors = onSnapshot(qMentors, (snap) => {
+      setMentors(snap.docs.map(doc => ({ uid: doc.id, ...doc.data() })));
+    });
+
+    const unsubMeetings = onSnapshot(collection(db, "meetings"), (snap) => {
+      setMeetings(snap.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          dateTime: data.dateTime?.toDate()
+        };
+      }));
+    });
+
+    return () => {
+      unsubCourses();
+      unsubMentors();
+      unsubMeetings();
+    };
+  }, [user]);
+
+  // Click outside search dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setShowSearchDropdown(true);
+  };
+
+  // Grouped search matches
+  const queryNormalized = searchQuery.toLowerCase().trim();
+  
+  const matchedCourses = queryNormalized 
+    ? courses.filter(c => 
+        (c.title || "").toLowerCase().includes(queryNormalized) ||
+        (c.description || "").toLowerCase().includes(queryNormalized) ||
+        (c.professorName || "").toLowerCase().includes(queryNormalized) ||
+        (c.skills || []).some((s: string) => (s || "").toLowerCase().includes(queryNormalized))
+      )
+    : [];
+
+  const matchedMentors = queryNormalized 
+    ? mentors.filter(m => 
+        (m.fullName || "").toLowerCase().includes(queryNormalized) ||
+        (m.bio || "").toLowerCase().includes(queryNormalized) ||
+        (m.mentorshipSubjects || []).some((s: string) => (s || "").toLowerCase().includes(queryNormalized))
+      )
+    : [];
+
+  const matchedMeetings = queryNormalized 
+    ? meetings.filter(meet => 
+        (meet.title || "").toLowerCase().includes(queryNormalized) ||
+        (meet.description || "").toLowerCase().includes(queryNormalized) ||
+        (meet.location || "").toLowerCase().includes(queryNormalized)
+      )
+    : [];
+
+  const hasAnyMatches = matchedCourses.length > 0 || matchedMentors.length > 0 || matchedMeetings.length > 0;
 
   useEffect(() => {
     if (user) {
@@ -67,6 +155,58 @@ export default function AppLayout({ children }: LayoutProps) {
       await deleteNotification(id);
     } catch (err) {
       toast.error("Error deleting notification.");
+    }
+  };
+
+  const handleAcceptBooking = async (e: React.MouseEvent, bookingId: string, notificationId: string) => {
+    e.stopPropagation();
+    try {
+      const bookingDoc = await getDoc(doc(db, "bookings", bookingId));
+      if (!bookingDoc.exists()) {
+        toast.error("Booking request not found.");
+        return;
+      }
+      const bookingData = bookingDoc.data();
+      
+      await updateBookingStatus(bookingId, "confirmed");
+      await deleteNotification(notificationId);
+      
+      await createNotification({
+        userId: bookingData.studentId,
+        title: "Mentorship Request Accepted",
+        content: `Professor ${profile?.fullName} has accepted your mentorship request in ${bookingData.subject}! Go to Mentorship section to schedule your online meeting.`,
+        type: 'booking_response',
+        link: '/mentorship'
+      });
+      toast.success("Mentorship request accepted!");
+    } catch (err) {
+      toast.error("Error accepting mentorship request.");
+    }
+  };
+
+  const handleDeclineBooking = async (e: React.MouseEvent, bookingId: string, notificationId: string) => {
+    e.stopPropagation();
+    try {
+      const bookingDoc = await getDoc(doc(db, "bookings", bookingId));
+      if (!bookingDoc.exists()) {
+        toast.error("Booking request not found.");
+        return;
+      }
+      const bookingData = bookingDoc.data();
+      
+      await updateBookingStatus(bookingId, "rejected");
+      await deleteNotification(notificationId);
+      
+      await createNotification({
+        userId: bookingData.studentId,
+        title: "Mentorship Request Declined",
+        content: `Professor ${profile?.fullName} has declined your mentorship request in ${bookingData.subject}.`,
+        type: 'booking_response',
+        link: '/mentorship'
+      });
+      toast.success("Mentorship request declined.");
+    } catch (err) {
+      toast.error("Error declining mentorship request.");
     }
   };
 
@@ -120,6 +260,7 @@ export default function AppLayout({ children }: LayoutProps) {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setSearchQuery("")}
                 className={cn(
                   "flex items-center gap-4 px-4 py-3 rounded-[1.25rem] transition-all duration-300 group relative overflow-hidden",
                   isActive 
@@ -178,15 +319,119 @@ export default function AppLayout({ children }: LayoutProps) {
               {menuItems.find(i => i.path === location.pathname)?.name || "Page"}
             </h1>
             
-            <div className="relative max-w-sm w-full group">
-               <input 
-                  type="text" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search in StudentLink..."
-                  className="w-full pl-12 pr-4 py-3.5 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-[1.25rem] focus:bg-[var(--bg-app)] focus:border-indigo-500/20 focus:shadow-xl transition-all outline-none text-sm font-bold shadow-inner"
-               />
-               <Search className="w-4 h-4 text-slate-400 absolute left-4 top-4 group-focus-within:text-indigo-600 transition-colors" />
+             <div ref={dropdownRef} className="relative max-w-sm w-full group">
+                <input 
+                   ref={inputRef}
+                   type="text" 
+                   value={searchQuery}
+                   onChange={handleSearchChange}
+                   onFocus={() => setShowSearchDropdown(true)}
+                   placeholder="Search in StudentLink..."
+                   className="w-full pl-12 pr-4 py-3.5 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-[1.25rem] focus:bg-[var(--bg-app)] focus:border-indigo-500/20 focus:shadow-xl transition-all outline-none text-sm font-bold shadow-inner"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-4 top-4 group-focus-within:text-indigo-600 transition-colors" />
+
+               {searchQuery.trim() !== "" && showSearchDropdown && (
+                 <div className="absolute top-full left-0 mt-3 w-full sm:w-[32rem] bg-[var(--bg-sidebar)] border border-slate-200/80 dark:border-slate-800 rounded-[2rem] shadow-2xl p-6 z-50 max-h-[28rem] overflow-y-auto custom-scrollbar">
+                   {!hasAnyMatches ? (
+                     <div className="text-center py-8 text-[var(--text-muted)] font-medium">
+                       Niciun rezultat găsit pentru <span className="text-indigo-600 dark:text-indigo-400 font-black">"{searchQuery}"</span>
+                     </div>
+                   ) : (
+                     <div className="space-y-6">
+                       {/* Cursuri */}
+                       {matchedCourses.length > 0 && (
+                         <div className="space-y-3">
+                           <div className="flex items-center gap-2 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">
+                             <BookOpen className="w-3.5 h-3.5" />
+                             Cursuri ({matchedCourses.length})
+                           </div>
+                           <div className="space-y-2">
+                             {matchedCourses.map((c) => (
+                               <button
+                                 key={c.id}
+                                 onClick={() => {
+                                   setShowSearchDropdown(false);
+                                   setSearchQuery("");
+                                   navigate(`/academic/${c.id}`);
+                                 }}
+                                 className="w-full text-left p-4 hover:bg-indigo-500/10 rounded-2xl transition-all border border-transparent hover:border-indigo-500/20 flex flex-col gap-1 cursor-pointer"
+                               >
+                                 <div className="font-black text-xs text-[var(--text-main)] uppercase tracking-tight line-clamp-1">
+                                   {c.title}
+                                 </div>
+                                 <div className="text-[10px] text-[var(--text-muted)] font-medium line-clamp-1">
+                                   Prof. {c.professorName}
+                                 </div>
+                               </button>
+                             ))}
+                           </div>
+                         </div>
+                       )}
+
+                       {/* Mentori */}
+                       {matchedMentors.length > 0 && (
+                         <div className="space-y-3">
+                           <div className="flex items-center gap-2 text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">
+                             <GraduationCap className="w-3.5 h-3.5" />
+                             Mentori ({matchedMentors.length})
+                           </div>
+                           <div className="space-y-2">
+                             {matchedMentors.map((m) => (
+                               <button
+                                 key={m.uid}
+                                 onClick={() => {
+                                   setShowSearchDropdown(false);
+                                   setSearchQuery("");
+                                   navigate(`/mentorship`);
+                                 }}
+                                 className="w-full text-left p-4 hover:bg-amber-500/10 rounded-2xl transition-all border border-transparent hover:border-amber-500/20 flex flex-col gap-1 cursor-pointer"
+                               >
+                                 <div className="font-black text-xs text-[var(--text-main)] uppercase tracking-tight line-clamp-1">
+                                   {m.fullName}
+                                 </div>
+                                 <div className="text-[10px] text-[var(--text-muted)] font-medium line-clamp-1">
+                                   {m.specialization || "Professor"} • {m.mentorshipSubjects?.join(", ") || "Diverse discipline"}
+                                 </div>
+                               </button>
+                             ))}
+                           </div>
+                         </div>
+                       )}
+
+                       {/* Sesiuni de Studiu */}
+                       {matchedMeetings.length > 0 && (
+                         <div className="space-y-3">
+                           <div className="flex items-center gap-2 text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">
+                             <Users className="w-3.5 h-3.5" />
+                             Sesiuni de Studiu ({matchedMeetings.length})
+                           </div>
+                           <div className="space-y-2">
+                             {matchedMeetings.map((meet) => (
+                               <button
+                                 key={meet.id}
+                                 onClick={() => {
+                                   setShowSearchDropdown(false);
+                                   setSearchQuery("");
+                                   navigate(`/community`);
+                                 }}
+                                 className="w-full text-left p-4 hover:bg-violet-500/10 rounded-2xl transition-all border border-transparent hover:border-violet-500/20 flex flex-col gap-1 cursor-pointer"
+                               >
+                                 <div className="font-black text-xs text-[var(--text-main)] uppercase tracking-tight line-clamp-1">
+                                   {meet.title}
+                                 </div>
+                                 <div className="text-[10px] text-[var(--text-muted)] font-medium line-clamp-1">
+                                   Locație: {meet.location} • Tip: {meet.type}
+                                 </div>
+                               </button>
+                             ))}
+                           </div>
+                         </div>
+                       )}
+                     </div>
+                   )}
+                 </div>
+               )}
             </div>
           </div>
           
@@ -270,11 +515,14 @@ export default function AppLayout({ children }: LayoutProps) {
                                      n.type === 'assignment' ? "bg-amber-50 text-amber-600 border-amber-100" :
                                      n.type === 'grade' ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                      n.type === 'message' ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                     n.type === 'booking_request' ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                                     n.type === 'booking_response' ? "bg-purple-50 text-purple-600 border-purple-100" :
                                      "bg-indigo-50 text-indigo-600 border-indigo-100"
                                    )}>
                                      {n.type === 'assignment' ? <CheckCircle2 className="w-6 h-6" /> :
                                       n.type === 'grade' ? <Zap className="w-6 h-6" /> :
                                       n.type === 'message' ? <Users className="w-6 h-6" /> :
+                                      n.type === 'booking_request' || n.type === 'booking_response' ? <GraduationCap className="w-6 h-6" /> :
                                       <Bell className="w-6 h-6" />}
                                    </div>
 
@@ -290,10 +538,26 @@ export default function AppLayout({ children }: LayoutProps) {
                                           {n.createdAt ? formatDistanceToNow(n.createdAt.toDate(), { addSuffix: true }) : 'just now'}
                                         </span>
                                       </div>
+                                      {n.type === 'booking_request' && n.bookingId && profile?.role === 'professor' && (
+                                        <div className="flex items-center gap-3 pt-3">
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleAcceptBooking(e, n.bookingId!, n.id); }}
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-emerald-500/20 cursor-pointer"
+                                          >
+                                            <CheckCircle2 className="w-3.5 h-3.5" /> Accept
+                                          </button>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeclineBooking(e, n.bookingId!, n.id); }}
+                                            className="flex items-center gap-1.5 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border border-rose-500/20 cursor-pointer"
+                                          >
+                                            <Trash2 className="w-3.5 h-3.5" /> Decline
+                                          </button>
+                                        </div>
+                                      )}
                                    </div>
 
                                    <button 
-                                     onClick={(e) => handleDeleteNotification(e, n.id)}
+                                     onClick={(e) => { e.stopPropagation(); handleDeleteNotification(e, n.id); }}
                                      className="absolute right-4 bottom-4 p-2 text-slate-200 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all active:scale-90"
                                    >
                                      <Trash2 className="w-4 h-4" />

@@ -38,7 +38,7 @@ service cloud.firestore {
     // Users
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId);
+      allow write: if isOwner(userId) || isSignedIn();
     }
 
     // Courses & Assignments - Permissive Read
@@ -67,6 +67,18 @@ service cloud.firestore {
     match /meetings/{meetingId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
+    }
+
+    match /postComments/{commentId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /communityMessages/{messageId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /materialComments/{commentId} {
+      allow read, write: if isSignedIn();
     }
 
     // Quizzes, Bookings, Notifications, Reviews - Permissive Read

@@ -8,6 +8,157 @@ import { toast } from "sonner";
 import { Camera, User, BookOpen, FileText, ArrowRight, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const UNIVERSITIES = [
+  {
+    id: "ubb",
+    name: "Babeș-Bolyai University (UBB)",
+    faculties: [
+      {
+        id: "ubb-mate-info",
+        name: "Faculty of Mathematics and Computer Science",
+        specializations: [
+          "Computer Science (Romanian)",
+          "Computer Science (English)",
+          "Computer Science (German)",
+          "Mathematics",
+          "Mathematics-Computer Science"
+        ]
+      },
+      {
+        id: "ubb-fsega",
+        name: "Faculty of Economics and Business Administration (FSEGA)",
+        specializations: [
+          "Economic Informatics",
+          "Management",
+          "Finance-Banking",
+          "Marketing",
+          "Accounting and Management Information Systems"
+        ]
+      },
+      {
+        id: "ubb-litere",
+        name: "Faculty of Letters",
+        specializations: [
+          "Romanian Language and Literature",
+          "Applied Modern Languages",
+          "English Language and Literature"
+        ]
+      }
+    ]
+  },
+  {
+    id: "utcn",
+    name: "Technical University of Cluj-Napoca (UTCN)",
+    faculties: [
+      {
+        id: "utcn-ac",
+        name: "Faculty of Automation and Computer Science",
+        specializations: [
+          "Computer Science (Romanian)",
+          "Computer Science (English)",
+          "Information Technology",
+          "Automation and Applied Informatics"
+        ]
+      },
+      {
+        id: "utcn-etti",
+        name: "Faculty of Electronics, Telecommunications and Information Technology (ETTI)",
+        specializations: [
+          "Telecommunication Technologies and Systems",
+          "Applied Electronics"
+        ]
+      },
+      {
+        id: "utcn-constructii",
+        name: "Faculty of Machine Building",
+        specializations: [
+          "Robotics",
+          "Industrial Engineering"
+        ]
+      }
+    ]
+  },
+  {
+    id: "unibuc",
+    name: "University of Bucharest (UniBuc)",
+    faculties: [
+      {
+        id: "unibuc-mate-info",
+        name: "Faculty of Mathematics and Computer Science",
+        specializations: [
+          "Computer Science",
+          "Information Technology",
+          "Mathematics"
+        ]
+      },
+      {
+        id: "unibuc-drept",
+        name: "Faculty of Law",
+        specializations: [
+          "Law"
+        ]
+      }
+    ]
+  },
+  {
+    id: "upb",
+    name: "Politehnica University of Bucharest (UPB)",
+    faculties: [
+      {
+        id: "upb-ac",
+        name: "Faculty of Automatic Control and Computers",
+        specializations: [
+          "Computers",
+          "Systems Engineering"
+        ]
+      },
+      {
+        id: "upb-etti",
+        name: "Faculty of Electronics, Telecommunications and Information Technology",
+        specializations: [
+          "Telecommunication Technologies and Systems",
+          "Microelectronics, Optoelectronics and Nanotechnologies"
+        ]
+      }
+    ]
+  },
+  {
+    id: "uaic",
+    name: "Alexandru Ioan Cuza University of Iași (UAIC)",
+    faculties: [
+      {
+        id: "uaic-info",
+        name: "Faculty of Computer Science",
+        specializations: [
+          "Computer Science"
+        ]
+      },
+      {
+        id: "uaic-economie",
+        name: "Faculty of Economics and Business Administration (FEAA)",
+        specializations: [
+          "Economic Informatics",
+          "Finance and Banking",
+          "Management"
+        ]
+      }
+    ]
+  },
+  {
+    id: "other",
+    name: "Other University",
+    faculties: [
+      {
+        id: "other-fac",
+        name: "Other Faculty",
+        specializations: [
+          "Other Specialization"
+        ]
+      }
+    ]
+  }
+];
+
 export default function OnboardingPage() {
   const { profile, user } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +172,13 @@ export default function OnboardingPage() {
     photoURL: profile?.photoURL || ""
   });
 
+  const [selectedUniv, setSelectedUniv] = useState<string>("");
+  const [selectedFac, setSelectedFac] = useState<string>("");
+  const [selectedSpec, setSelectedSpec] = useState<string>("");
+  const [customUniv, setCustomUniv] = useState<string>("");
+  const [customFac, setCustomFac] = useState<string>("");
+  const [customSpec, setCustomSpec] = useState<string>("");
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewURL, setPreviewURL] = useState<string>(profile?.photoURL || "");
 
@@ -30,6 +188,33 @@ export default function OnboardingPage() {
       setSelectedFile(file);
       setPreviewURL(URL.createObjectURL(file));
     }
+  };
+
+  const isStep2Valid = () => {
+    if (profile.role !== 'student') {
+      return !!formData.specialization.trim();
+    }
+    if (!selectedUniv) return false;
+    if (selectedUniv === 'other' && !customUniv.trim()) return false;
+    if (!selectedFac) return false;
+    if (selectedFac === 'other-fac' && !customFac.trim()) return false;
+    if (!selectedSpec) return false;
+    if (selectedSpec === 'other-spec' && !customSpec.trim()) return false;
+    return true;
+  };
+
+  const handleStep2Continue = () => {
+    if (profile.role === 'student') {
+      const univName = selectedUniv === 'other' ? customUniv : UNIVERSITIES.find(u => u.id === selectedUniv)?.name || "";
+      const facName = selectedFac === 'other-fac' ? customFac : UNIVERSITIES.find(u => u.id === selectedUniv)?.faculties.find(f => f.id === selectedFac)?.name || "";
+      const specName = selectedSpec === 'other-spec' ? customSpec : selectedSpec;
+      const finalSpecialization = `${univName} - ${facName} (${specName})`;
+      setFormData(prev => ({
+        ...prev,
+        specialization: finalSpecialization
+      }));
+    }
+    setStep(3);
   };
 
   const handleComplete = async () => {
@@ -45,8 +230,25 @@ export default function OnboardingPage() {
         finalPhotoURL = downloadURL;
       }
 
+      const univName = profile.role === 'student'
+        ? (selectedUniv === 'other' ? customUniv : UNIVERSITIES.find(u => u.id === selectedUniv)?.name || "")
+        : "";
+      const facName = profile.role === 'student'
+        ? (selectedFac === 'other-fac' ? customFac : UNIVERSITIES.find(u => u.id === selectedUniv)?.faculties.find(f => f.id === selectedFac)?.name || "")
+        : "";
+      const specName = profile.role === 'student'
+        ? (selectedSpec === 'other-spec' ? customSpec : selectedSpec)
+        : formData.specialization;
+
+      const finalSpecialization = profile.role === 'student'
+        ? `${univName} - ${facName} (${specName})`
+        : formData.specialization;
+
       await updateDoc(doc(db, "users", user.uid), {
         ...formData,
+        specialization: finalSpecialization,
+        university: univName,
+        faculty: facName,
         photoURL: finalPhotoURL,
         profileSetup: true
       });
@@ -55,7 +257,7 @@ export default function OnboardingPage() {
       navigate("/");
     } catch (err) {
       console.error(err);
-      toast.error("Error saving your profile.");
+      toast.error("Error saving profile.");
     } finally {
       setLoading(false);
     }
@@ -145,33 +347,212 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-6">
-                <div className="space-y-2">
-                   <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
-                     {profile.role === 'student' ? 'Faculty / Specialization' : 'Department / Chair'}
-                   </label>
-                   <div className="relative">
+                {profile.role === 'student' ? (
+                  <div className="space-y-6">
+                    {/* 1. University Dropdown */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                        University
+                      </label>
+                      <div className="relative">
+                        <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
+                        <select
+                          className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                          value={selectedUniv}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedUniv(val);
+                            setSelectedFac("");
+                            setSelectedSpec("");
+                            setCustomUniv("");
+                            setCustomFac("");
+                            setCustomSpec("");
+                          }}
+                        >
+                          <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select University</option>
+                          {UNIVERSITIES.map((univ) => (
+                            <option key={univ.id} value={univ.id} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                              {univ.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute right-4 top-5 pointer-events-none border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-indigo-400 w-0 h-0"></div>
+                      </div>
+                    </div>
+
+                    {/* Custom University Input */}
+                    {selectedUniv === 'other' && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                      >
+                        <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                          University Name
+                        </label>
+                        <input 
+                          type="text" 
+                          placeholder="Enter university name..."
+                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          value={customUniv}
+                          onChange={(e) => setCustomUniv(e.target.value)}
+                        />
+                      </motion.div>
+                    )}
+
+                    {/* 2. Faculty Dropdown */}
+                    {selectedUniv && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                      >
+                        <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                          Faculty
+                        </label>
+                        <div className="relative">
+                          <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
+                          <select
+                            className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                            value={selectedFac}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedFac(val);
+                              setSelectedSpec("");
+                              setCustomFac("");
+                              setCustomSpec("");
+                            }}
+                          >
+                            <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select Faculty</option>
+                            {selectedUniv === 'other' ? (
+                              <option value="other-fac" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Faculty</option>
+                            ) : (
+                              <>
+                                {UNIVERSITIES.find(u => u.id === selectedUniv)?.faculties.map((fac) => (
+                                  <option key={fac.id} value={fac.id} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                                    {fac.name}
+                                  </option>
+                                ))}
+                                <option value="other-fac" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Faculty</option>
+                              </>
+                            )}
+                          </select>
+                          <div className="absolute right-4 top-5 pointer-events-none border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-indigo-400 w-0 h-0"></div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Custom Faculty Input */}
+                    {(selectedFac === 'other-fac' || selectedUniv === 'other') && selectedUniv && selectedFac && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                      >
+                        <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                          Faculty Name
+                        </label>
+                        <input 
+                          type="text" 
+                          placeholder="Enter faculty name..."
+                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          value={customFac}
+                          onChange={(e) => setCustomFac(e.target.value)}
+                        />
+                      </motion.div>
+                    )}
+
+                    {/* 3. Specialization Dropdown */}
+                    {selectedFac && selectedUniv && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                      >
+                        <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                          Specialization
+                        </label>
+                        <div className="relative">
+                          <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
+                          <select
+                            className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                            value={selectedSpec}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setSelectedSpec(val);
+                              setCustomSpec("");
+                            }}
+                          >
+                            <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select Specialization</option>
+                            {selectedFac === 'other-fac' || selectedUniv === 'other' ? (
+                              <option value="other-spec" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Specialization</option>
+                            ) : (
+                              <>
+                                {UNIVERSITIES.find(u => u.id === selectedUniv)
+                                  ?.faculties.find(f => f.id === selectedFac)
+                                  ?.specializations.map((spec) => (
+                                    <option key={spec} value={spec} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                                      {spec}
+                                    </option>
+                                  ))}
+                                <option value="other-spec" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Specialization</option>
+                              </>
+                            )}
+                          </select>
+                          <div className="absolute right-4 top-5 pointer-events-none border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-indigo-400 w-0 h-0"></div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Custom Specialization Input */}
+                    {(selectedSpec === 'other-spec' || selectedFac === 'other-fac' || selectedUniv === 'other') && selectedUniv && selectedFac && selectedSpec && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="space-y-2"
+                      >
+                        <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                          Specialization Name
+                        </label>
+                        <input 
+                          type="text" 
+                          placeholder="Enter specialization name..."
+                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          value={customSpec}
+                          onChange={(e) => setCustomSpec(e.target.value)}
+                        />
+                      </motion.div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
+                      Department / Chair
+                    </label>
+                    <div className="relative">
                       <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
                       <input 
                         type="text" 
-                        placeholder="e.g. Faculty of Mathematics and Computer Science"
+                        placeholder="e.g. Department of Mathematics and Computer Science"
                         className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                         value={formData.specialization}
                         onChange={(e) => setFormData({...formData, specialization: e.target.value})}
                       />
-                   </div>
-                </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
-                   <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Short Description (Bio)</label>
-                   <div className="relative">
-                      <FileText className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
-                      <textarea 
-                        placeholder="Tell us a few words about yourself..."
-                        className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] min-h-[120px]"
-                        value={formData.bio}
-                        onChange={(e) => setFormData({...formData, bio: e.target.value})}
-                      />
-                   </div>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Short Description (Bio)</label>
+                  <div className="relative">
+                    <FileText className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
+                    <textarea 
+                      placeholder="Tell us a few words about yourself..."
+                      className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] min-h-[120px]"
+                      value={formData.bio}
+                      onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -183,8 +564,8 @@ export default function OnboardingPage() {
                   Back
                 </button>
                 <button 
-                  onClick={() => setStep(3)}
-                  disabled={!formData.specialization}
+                  onClick={handleStep2Continue}
+                  disabled={!isStep2Valid()}
                   className="flex-[2] py-5 bg-indigo-600 text-white rounded-3xl font-black text-lg shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
                 >
                   Continue <ArrowRight className="w-5 h-5" />
@@ -195,19 +576,19 @@ export default function OnboardingPage() {
 
           {step === 3 && (
             <div className="space-y-10 text-center">
-               <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center text-green-600 mx-auto">
-                  <Check className="w-12 h-12 stroke-[3px]" />
-               </div>
+              <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center text-green-600 mx-auto">
+                <Check className="w-12 h-12 stroke-[3px]" />
+              </div>
                
-               <div>
-                 <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Everything is ready!</h2>
-                 <p className="text-[var(--text-muted)] mt-4 font-medium px-8">
-                   You are now part of the <span className="text-indigo-600 font-black">STUDENTLINK</span> community. 
-                   Your profile is complete and you can access all features of the platform.
-                 </p>
-               </div>
+              <div>
+                <h2 className="text-3xl font-black text-[var(--text-main)] tracking-tight">Everything is ready!</h2>
+                <p className="text-[var(--text-muted)] mt-4 font-medium px-8">
+                  You are now part of the <span className="text-indigo-600 font-black">STUDENTLINK</span> community. 
+                  Your profile is complete and you can access all features of the platform.
+                </p>
+              </div>
 
-               <div className="flex gap-4">
+              <div className="flex gap-4">
                 <button 
                   onClick={() => setStep(2)}
                   className="flex-1 py-5 bg-slate-100 text-slate-500 rounded-3xl font-bold hover:bg-slate-200 transition-all"

@@ -17,17 +17,17 @@ export interface Notification {
   userId: string;
   title: string;
   content: string;
-  type: 'assignment' | 'grade' | 'message' | 'system';
+  type: 'assignment' | 'grade' | 'message' | 'system' | 'booking_request' | 'booking_response';
   read: boolean;
   createdAt: any;
   link?: string;
+  bookingId?: string;
 }
 
 export const getNotifications = (userId: string, callback: (notifications: Notification[]) => void) => {
   const q = query(
     collection(db, "notifications"),
-    where("userId", "==", userId),
-    orderBy("createdAt", "desc")
+    where("userId", "==", userId)
   );
 
   return onSnapshot(q, (snapshot) => {
@@ -35,7 +35,23 @@ export const getNotifications = (userId: string, callback: (notifications: Notif
       id: doc.id,
       ...doc.data()
     } as Notification));
+
+    notifications.sort((a, b) => {
+      const getTime = (val: any) => {
+        if (!val) return 0;
+        if (typeof val.toDate === 'function') return val.toDate().getTime();
+        if (typeof val.getTime === 'function') return val.getTime();
+        if (val.seconds !== undefined) return val.seconds * 1000 + (val.nanoseconds || 0) / 1000000;
+        if (typeof val === 'number') return val;
+        if (typeof val === 'string') return new Date(val).getTime();
+        return 0;
+      };
+      return getTime(b.createdAt) - getTime(a.createdAt);
+    });
+
     callback(notifications);
+  }, (error) => {
+    console.error("Error in getNotifications:", error);
   });
 };
 

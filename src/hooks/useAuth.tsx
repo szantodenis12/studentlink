@@ -12,6 +12,8 @@ export interface UserProfile {
   role: UserRole;
   profileSetup?: boolean;
   specialization?: string;
+  university?: string;
+  faculty?: string;
   photoURL?: string;
   bio?: string;
   academicData?: {
@@ -24,6 +26,7 @@ export interface UserProfile {
   rating?: number;
   mentorshipPrice?: number;
   mentorshipSubjects?: string[];
+  isMentor?: boolean;
 }
 
 interface AuthContextType {
