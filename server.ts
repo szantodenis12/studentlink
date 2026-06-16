@@ -390,7 +390,7 @@ async function startServer() {
     try {
       const { GoogleGenAI } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      const model = "gemini-3-flash-preview";
+      const model = "gemini-2.5-flash";
       const gradesStr = Object.entries(grades).map(([subject, grade]) => `${subject}: ${grade}`).join(", ");
       const prompt = `Analyze the academic performance of the student ${studentName}.
       Grades: ${gradesStr}
@@ -419,7 +419,7 @@ async function startServer() {
     try {
       const { GoogleGenAI, Type } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
-      const model = "gemini-3-flash-preview";
+      const model = "gemini-2.5-flash";
       const prompt = `You are an expert academic assistant. Generate a multiple-choice quiz in English for the course "${courseTitle}".
       Description: ${description}
       Materials: ${materialsText}

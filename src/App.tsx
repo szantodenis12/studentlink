@@ -41,12 +41,18 @@ import { cn } from "./lib/utils";
 // Dashboard Component
 const Dashboard = () => {
   const { profile } = useAuth();
+
+  if (profile?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [activeDetailTab, setActiveDetailTab] = useState<'modules' | 'tasks' | 'classmates' | 'index' | null>(null);
+  const [profPendingSubmissions, setProfPendingSubmissions] = useState<Submission[]>([]);
 
   useEffect(() => {
     if (!profile?.uid) return;
@@ -91,12 +97,22 @@ const Dashboard = () => {
       setSubmissions(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission)));
     });
 
+    // 6. Pending submissions for professor's review (professors only)
+    let unsubProfSubs = () => {};
+    if (profile.role === 'professor') {
+      const qProfSubs = query(collection(db, "submissions"), where("status", "==", "pending"));
+      unsubProfSubs = onSnapshot(qProfSubs, (snap) => {
+        setProfPendingSubmissions(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission)));
+      });
+    }
+
     return () => {
       unsubCourses();
       unsubUsers();
       unsubMeetings();
       unsubAssignments();
       unsubSubmissions();
+      unsubProfSubs();
     };
   }, [profile?.uid]);
 
@@ -118,12 +134,30 @@ const Dashboard = () => {
   const pendingAssignments = enrolledCourseAssignments.filter(a => !submittedAssignmentIds.includes(a.id));
 
   const upcomingMeetings = meetings.filter(m => {
-    const isParticipant = m.participants?.includes(profile?.uid || "");
+    const isParticipant = m.participants?.includes(profile?.uid || "") || m.creatorId === profile?.uid;
     const isFuture = m.dateTime ? new Date(m.dateTime).getTime() > Date.now() : false;
     return isParticipant && isFuture;
   });
 
   const criticalTasksCount = pendingAssignments.length + upcomingMeetings.length;
+
+  // Professor-specific derived values
+  const isProfessor = profile?.role === 'professor';
+  const myCourses = isProfessor ? courses.filter(c => c.professorId === profile?.uid) : [];
+  const myCourseIds = myCourses.map(c => c.id);
+  const myStudents = isProfessor ? users.filter(u =>
+    u.role === 'student' &&
+    myCourseIds.some(id => u.academicData?.enrolledCourses?.includes(id))
+  ) : [];
+  const myPendingSubs = isProfessor
+    ? profPendingSubmissions.filter(s => myCourseIds.includes(s.courseId))
+    : [];
+  const profCriticalTasksCount = myPendingSubs.length + upcomingMeetings.length;
+
+  // Role-aware display values
+  const displayActiveCount = isProfessor ? myCourses.length : activeCoursesCount;
+  const displayCriticalCount = isProfessor ? profCriticalTasksCount : criticalTasksCount;
+  const displayClassmates = isProfessor ? myStudents : classmates;
 
   // Academic Index dynamic calculations
   const gradedSubs = submissions.filter(s => s.status === 'graded' && typeof s.grade === 'number');
@@ -251,7 +285,7 @@ const Dashboard = () => {
             onClick={() => setActiveDetailTab(activeDetailTab === 'classmates' ? null : 'classmates')}
           >
             <div className="flex -space-x-4">
-              {classmates.slice(0, 4).map((c) => (
+              {displayClassmates.slice(0, 4).map((c) => (
                 <div
                   key={c.uid}
                   className="w-14 h-14 rounded-2xl border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-white font-bold overflow-hidden shadow-2xl relative hover:scale-110 transition-transform"
@@ -264,19 +298,19 @@ const Dashboard = () => {
                   />
                 </div>
               ))}
-              {classmates.length > 4 && (
+              {displayClassmates.length > 4 && (
                 <div className="w-14 h-14 rounded-2xl border-4 border-slate-900 bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-2xl relative z-10">
-                  +{classmates.length - 4}
+                  +{displayClassmates.length - 4}
                 </div>
               )}
-              {classmates.length === 0 && (
+              {displayClassmates.length === 0 && (
                 <div className="w-14 h-14 rounded-2xl border-4 border-slate-900 bg-slate-800 flex items-center justify-center text-indigo-400 text-xs font-bold shadow-2xl">
                   0
                 </div>
               )}
             </div>
             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">
-              Online Classmates
+              {isProfessor ? 'Enrolled Students' : 'Online Classmates'}
             </p>
           </div>
         </div>
@@ -286,8 +320,8 @@ const Dashboard = () => {
         {[
           {
             id: "modules" as const,
-            label: "Active Modules",
-            value: activeCoursesCount,
+            label: isProfessor ? "Active Courses" : "Active Modules",
+            value: displayActiveCount,
             icon: GraduationCap,
             color: "indigo",
             delay: 0.1,
@@ -295,7 +329,7 @@ const Dashboard = () => {
           {
             id: "tasks" as const,
             label: "Critical Tasks",
-            value: criticalTasksCount,
+            value: displayCriticalCount,
             icon: Clock,
             color: "amber",
             delay: 0.2,
@@ -364,43 +398,85 @@ const Dashboard = () => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">Active Enrolled Modules</h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">Your current universe of enrolled academic courses.</p>
+                    <h4 className="text-xl font-black text-white tracking-tight uppercase">
+                      {isProfessor ? 'My Active Courses' : 'Active Enrolled Modules'}
+                    </h4>
+                    <p className="text-xs text-indigo-200/60 font-medium">
+                      {isProfessor ? 'Courses you have created and are currently teaching.' : 'Your current universe of enrolled academic courses.'}
+                    </p>
                   </div>
                   <GraduationCap className="w-8 h-8 text-indigo-400 opacity-80" />
                 </div>
                 
-                {enrolledCourses.length === 0 ? (
-                  <div className="text-center py-10 text-slate-400 font-medium">
-                    You are not enrolled in any courses yet. Explore the{" "}
-                    <Link to="/academic" className="text-indigo-400 hover:underline">Academic</Link> page.
-                  </div>
+                {isProfessor ? (
+                  myCourses.length === 0 ? (
+                    <div className="text-center py-10 text-slate-400 font-medium">
+                      You haven't created any courses yet. Go to the{" "}
+                      <Link to="/academic" className="text-indigo-400 hover:underline">Academic</Link> page to create your first course.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {myCourses.map((c) => {
+                        const enrolledCount = users.filter(u =>
+                          u.role === 'student' && u.academicData?.enrolledCourses?.includes(c.id)
+                        ).length;
+                        return (
+                          <Link
+                            key={c.id}
+                            to={`/academic/${c.id}`}
+                            className="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-white/5 transition-all group flex flex-col justify-between"
+                          >
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-start">
+                                <h5 className="font-black text-white uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
+                                  {c.title}
+                                </h5>
+                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                              </div>
+                              <p className="text-xs text-slate-400 font-medium line-clamp-2">{c.description}</p>
+                            </div>
+                            <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
+                              <Users className="w-3.5 h-3.5" />
+                              <span>{enrolledCount} student{enrolledCount !== 1 ? 's' : ''} enrolled</span>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {enrolledCourses.map((c) => (
-                      <Link
-                        key={c.id}
-                        to={`/academic/${c.id}`}
-                        className="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-white/5 transition-all group flex flex-col justify-between"
-                      >
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-start">
-                            <h5 className="font-black text-white uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
-                              {c.title}
-                            </h5>
-                            <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                  enrolledCourses.length === 0 ? (
+                    <div className="text-center py-10 text-slate-400 font-medium">
+                      You are not enrolled in any courses yet. Explore the{" "}
+                      <Link to="/academic" className="text-indigo-400 hover:underline">Academic</Link> page.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {enrolledCourses.map((c) => (
+                        <Link
+                          key={c.id}
+                          to={`/academic/${c.id}`}
+                          className="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-white/5 transition-all group flex flex-col justify-between"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-start">
+                              <h5 className="font-black text-white uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
+                                {c.title}
+                              </h5>
+                              <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                            </div>
+                            <p className="text-xs text-slate-400 font-medium line-clamp-2">
+                              {c.description}
+                            </p>
                           </div>
-                          <p className="text-xs text-slate-400 font-medium line-clamp-2">
-                            {c.description}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
-                          <UserIcon className="w-3.5 h-3.5" />
-                          <span>Prof. {c.professorName}</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
+                            <UserIcon className="w-3.5 h-3.5" />
+                            <span>Prof. {c.professorName}</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )
                 )}
               </div>
             )}
@@ -410,46 +486,77 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <div>
                     <h4 className="text-xl font-black text-white tracking-tight uppercase">Critical Tasks & Agenda</h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">Urgent assignments and registered study meetups.</p>
+                    <p className="text-xs text-indigo-200/60 font-medium">
+                      {isProfessor ? 'Submissions to grade and upcoming study sessions.' : 'Urgent assignments and registered study meetups.'}
+                    </p>
                   </div>
                   <Clock className="w-8 h-8 text-amber-400 opacity-80" />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Col: Pending Assignments */}
+                  {/* Left Col: Pending tasks */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] flex items-center gap-2">
                       <ListTodo className="w-4 h-4" />
-                      Pending Homework ({pendingAssignments.length})
+                      {isProfessor ? `Submissions to Grade (${myPendingSubs.length})` : `Pending Homework (${pendingAssignments.length})`}
                     </h5>
                     
-                    {pendingAssignments.length === 0 ? (
-                      <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
-                        No pending homework! You are completely up to date.
-                      </div>
+                    {isProfessor ? (
+                      myPendingSubs.length === 0 ? (
+                        <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
+                          No pending submissions! All caught up.
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {myPendingSubs.slice(0, 6).map(s => {
+                            const course = myCourses.find(c => c.id === s.courseId);
+                            return (
+                              <Link
+                                key={s.id}
+                                to={`/academic/${s.courseId}`}
+                                className="glass p-4 rounded-xl border border-white/5 hover:border-amber-500/30 hover:bg-white/5 transition-all block"
+                              >
+                                <div className="flex justify-between items-start gap-2">
+                                  <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{s.studentName}</h6>
+                                  <span className="text-[8px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-widest shrink-0">Pending</span>
+                                </div>
+                                <p className="text-[10px] text-indigo-200/60 mt-1 uppercase font-black tracking-wider line-clamp-1">
+                                  Course: {course?.title || 'Unknown'}
+                                </p>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )
                     ) : (
-                      <div className="space-y-3">
-                        {pendingAssignments.map(a => {
-                          const course = enrolledCourses.find(c => c.id === a.courseId);
-                          return (
-                            <Link
-                              key={a.id}
-                              to={`/academic/${a.courseId}`}
-                              className="glass p-4 rounded-xl border border-white/5 hover:border-amber-500/30 hover:bg-white/5 transition-all block"
-                            >
-                              <div className="flex justify-between items-start gap-2">
-                                <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{a.title}</h6>
-                                <span className="text-[8px] font-black text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest shrink-0">
-                                  Due: {a.dueDate ? new Date(a.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'N/A'}
-                                </span>
-                              </div>
-                              <p className="text-[10px] text-indigo-200/60 mt-1 uppercase font-black tracking-wider line-clamp-1">
-                                Course: {course?.title || 'Unknown'}
-                              </p>
-                            </Link>
-                          );
-                        })}
-                      </div>
+                      pendingAssignments.length === 0 ? (
+                        <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
+                          No pending homework! You are completely up to date.
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {pendingAssignments.map(a => {
+                            const course = enrolledCourses.find(c => c.id === a.courseId);
+                            return (
+                              <Link
+                                key={a.id}
+                                to={`/academic/${a.courseId}`}
+                                className="glass p-4 rounded-xl border border-white/5 hover:border-amber-500/30 hover:bg-white/5 transition-all block"
+                              >
+                                <div className="flex justify-between items-start gap-2">
+                                  <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{a.title}</h6>
+                                  <span className="text-[8px] font-black text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest shrink-0">
+                                    Due: {a.dueDate ? new Date(a.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'N/A'}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-indigo-200/60 mt-1 uppercase font-black tracking-wider line-clamp-1">
+                                  Course: {course?.title || 'Unknown'}
+                                </p>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )
                     )}
                   </div>
                   
@@ -496,23 +603,26 @@ const Dashboard = () => {
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">Classmate Connections</h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">Students enrolled in your courses. Collaborative study triggers success.</p>
+                    <h4 className="text-xl font-black text-white tracking-tight uppercase">
+                      {isProfessor ? 'Your Enrolled Students' : 'Classmate Connections'}
+                    </h4>
+                    <p className="text-xs text-indigo-200/60 font-medium">
+                      {isProfessor ? 'Students currently enrolled in your courses.' : 'Students enrolled in your courses. Collaborative study triggers success.'}
+                    </p>
                   </div>
                   <Users className="w-8 h-8 text-indigo-400 opacity-80" />
                 </div>
                 
-                {classmates.length === 0 ? (
+                {displayClassmates.length === 0 ? (
                   <div className="text-center py-10 text-slate-400 font-medium">
-                    No classmates detected. Once other students enroll in the same courses, they will appear here!
+                    {isProfessor ? 'No students enrolled in your courses yet.' : 'No classmates detected. Once other students enroll in the same courses, they will appear here!'}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {classmates.map(c => {
-                      const otherEnrolled = c.academicData?.enrolledCourses || [];
-                      const sharedCourseNames = enrolledCourses
-                        .filter(course => otherEnrolled.includes(course.id))
-                        .map(course => course.title);
+                    {displayClassmates.map(c => {
+                      const sharedLabel = isProfessor
+                        ? myCourses.filter(course => c.academicData?.enrolledCourses?.includes(course.id)).map(course => course.title)
+                        : enrolledCourses.filter(course => c.academicData?.enrolledCourses?.includes(course.id)).map(course => course.title);
                       
                       return (
                         <div
@@ -532,10 +642,10 @@ const Dashboard = () => {
                               {c.fullName}
                             </p>
                             <p className="text-[9px] text-slate-400 truncate uppercase font-medium">
-                              {c.specialization || "Student"}
+                              {c.specialization || (isProfessor ? 'Student' : 'Student')}
                             </p>
                             <div className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mt-1">
-                              Shared Courses: {sharedCourseNames.length > 0 ? sharedCourseNames.slice(0, 2).join(', ') : 'None'}
+                              {isProfessor ? 'Enrolled in: ' : 'Shared: '}{sharedLabel.length > 0 ? sharedLabel.slice(0, 2).join(', ') : 'None'}
                             </div>
                           </div>
                         </div>

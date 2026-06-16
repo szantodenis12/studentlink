@@ -88,6 +88,7 @@ export default function AcademicPage() {
         description: newCourse.description,
         professorId: profile.uid,
         professorName: profile.fullName,
+        professorPhotoURL: profile.photoURL || "",
         materials: [],
         skills: parsedSkills,
       } as any);
@@ -369,7 +370,7 @@ export default function AcademicPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[var(--text-muted)] overflow-hidden shadow-2xl glass">
                     <img
-                      src={`https://picsum.photos/seed/${course.professorId}/128/128`}
+                      src={course.professorPhotoURL || `https://picsum.photos/seed/${course.professorId}/128/128`}
                       alt=""
                       className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform"
                     />

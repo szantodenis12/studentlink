@@ -210,17 +210,18 @@ export default function AppLayout({ children }: LayoutProps) {
     }
   };
 
-  const menuItems = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
-    { name: "Academic", path: "/academic", icon: BookOpen },
-    { name: "Community", path: "/community", icon: Users, studentOnly: true },
-    { name: "Mentorship", path: "/mentorship", icon: GraduationCap },
-    { name: "Profile", path: "/profile", icon: User },
-  ];
-
-  if (profile?.role === "admin") {
-    menuItems.push({ name: "Admin", path: "/admin", icon: ShieldCheck });
-  }
+  const menuItems = profile?.role === "admin"
+    ? [
+        { name: "Admin Panel", path: "/admin", icon: ShieldCheck },
+        { name: "Profile", path: "/profile", icon: User },
+      ]
+    : [
+        { name: "Dashboard", path: "/", icon: LayoutDashboard },
+        { name: "Academic", path: "/academic", icon: BookOpen },
+        { name: "Community", path: "/community", icon: Users, studentOnly: true },
+        { name: "Mentorship", path: "/mentorship", icon: GraduationCap },
+        { name: "Profile", path: "/profile", icon: User },
+      ];
 
   const handleLogout = () => auth.signOut();
 
@@ -282,11 +283,12 @@ export default function AppLayout({ children }: LayoutProps) {
         </nav>
 
         <div className="p-5 mt-auto">
-                <motion.div 
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-indigo-700 rounded-[1.5rem] p-5 text-white relative overflow-hidden group shadow-2xl dark:shadow-none"
-                >
-                   <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/20 blur-2xl group-hover:scale-150 transition-transform"></div>
+                 {profile?.role === 'student' && (
+                 <motion.div 
+                   whileHover={{ scale: 1.02 }}
+                   className="bg-indigo-700 rounded-[1.5rem] p-5 text-white relative overflow-hidden group shadow-2xl dark:shadow-none mb-0"
+                 >
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/20 blur-2xl group-hover:scale-150 transition-transform"></div>
               <div className="relative z-10">
                  <div className="flex items-center gap-2 text-indigo-200 font-black text-[9px] uppercase tracking-widest mb-2">
                     <Zap className="w-3 h-3 text-amber-400" /> Career Plus AI
@@ -297,6 +299,7 @@ export default function AppLayout({ children }: LayoutProps) {
                   </Link>
               </div>
            </motion.div>
+                 )}
 
            <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
                <button

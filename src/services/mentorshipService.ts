@@ -144,10 +144,21 @@ export const updateMentorProfile = async (
   price: number,
   bio: string
 ) => {
-  return updateDoc(doc(db, "users", userId), {
+  const updates: any = {
     isMentor,
     mentorshipSubjects: subjects,
     mentorshipPrice: price,
     bio
-  });
+  };
+
+  // Set rating to 0 when enabling mentorship for the first time
+  if (isMentor) {
+    const userSnap = await getDoc(doc(db, "users", userId));
+    const currentRating = userSnap.data()?.rating;
+    if (currentRating === undefined || currentRating === null) {
+      updates.rating = 0;
+    }
+  }
+
+  return updateDoc(doc(db, "users", userId), updates);
 };

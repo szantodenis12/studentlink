@@ -401,7 +401,7 @@ export default function CourseDetailsPage() {
             
             <div className="glass p-8 rounded-[2.5rem] flex flex-col items-center bg-[var(--bg-app)]/30 border-[var(--glass-border)] min-w-[180px]">
                <div className="w-16 h-16 bg-[var(--bg-app)] dark:bg-slate-800 rounded-2xl flex items-center justify-center text-[var(--text-muted)] mb-4 shadow-xl shadow-slate-100 dark:shadow-none group">
-                  <img src={`https://picsum.photos/seed/${course.professorId}/128/128`} alt="" className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:scale-110 transition-transform" />
+                  <img src={course.professorPhotoURL || `https://picsum.photos/seed/${course.professorId}/128/128`} alt="" className="w-full h-full object-cover rounded-2xl opacity-90 group-hover:scale-110 transition-transform" />
                </div>
                <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">Coordinator</p>
                <p className="text-sm font-black text-[var(--text-main)] font-display uppercase tracking-tight">{course.professorName}</p>

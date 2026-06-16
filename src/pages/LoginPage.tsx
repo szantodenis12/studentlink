@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import { useAuth } from "../hooks/useAuth";
@@ -25,6 +25,8 @@ export default function LoginPage() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotSuccess, setForgotSuccess] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [unverifiedUser, setUnverifiedUser] = useState<any>(null);
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -96,7 +98,7 @@ export default function LoginPage() {
           return;
         }
 
-        // 3. Secret Key Validation for Professors
+        // 3. Secret Key Validation for Professors/Admins
         if (role === 'professor') {
           const secretKey = "prof-secret-2024";
           
@@ -105,19 +107,41 @@ export default function LoginPage() {
             setLoading(false);
             return;
           }
+        } else if (role === 'admin') {
+          const secretKey = "admin-secret-2026";
+          
+          if (professorKey.trim().toLowerCase() !== secretKey.toLowerCase()) {
+            setError("The admin validation key is incorrect.");
+            setLoading(false);
+            return;
+          }
         }
 
         const result = await createUserWithEmailAndPassword(auth, email, password);
+        // Send email verification
+        await sendEmailVerification(result.user);
         await setDoc(doc(db, "users", result.user.uid), {
           fullName,
           email,
           role,
-          profileSetup: false,
+          profileSetup: role === 'admin' ? true : false,
           createdAt: new Date().toISOString()
         });
-        toast.success("Account created successfully!");
+        // Sign out immediately - user must verify email first
+        await auth.signOut();
+        toast.success("Account created! Check your email to verify your account.");
+        setIsRegistering(false);
+        setForgotSuccess("A verification email has been sent. Please check your inbox and verify your email before logging in.");
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        // Block login if email not verified
+        if (!result.user.emailVerified) {
+          setUnverifiedUser(result.user);
+          await auth.signOut();
+          setError("Your email is not verified. Please check your inbox and click the verification link.");
+          setLoading(false);
+          return;
+        }
         toast.success("Welcome back!");
       }
     } catch (err: any) {
@@ -146,21 +170,41 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await sendPasswordResetEmail(auth, forgotEmail);
+      // Use custom branded email endpoint for better deliverability
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to send reset email');
+      }
       setForgotSuccess("Link-ul de resetare a parolei a fost trimis pe e-mail!");
       toast.success("E-mail trimis cu succes!");
     } catch (err: any) {
       console.error(err);
-      if (err.code === "auth/user-not-found") {
+      if (err.message?.includes('user-not-found') || err.message?.includes('404') || err.message?.includes('not found')) {
         setError("Acest e-mail nu este înregistrat în platformă.");
-      } else if (err.code === "auth/invalid-email") {
-        setError("Adresa de e-mail introdusă nu este validă.");
       } else {
         setError("A apărut o eroare la trimiterea e-mailului. Vă rugăm să încercați din nou.");
       }
       toast.error("Trimiterea a eșuat.");
     } finally {
       setForgotLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedUser) return;
+    setResendLoading(true);
+    try {
+      await sendEmailVerification(unverifiedUser);
+      toast.success("Verification email resent! Check your inbox.");
+    } catch (err) {
+      toast.error("Failed to resend verification email.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -345,10 +389,11 @@ export default function LoginPage() {
 
                         <div className="space-y-4">
                            <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">Account Type:</label>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-3 gap-4">
                             {[
                               { id: 'student', name: 'Student', icon: GraduationCap },
-                              { id: 'professor', name: 'Professor', icon: BookOpen }
+                              { id: 'professor', name: 'Professor', icon: BookOpen },
+                              { id: 'admin', name: 'Admin', icon: ShieldCheck }
                             ].map((r) => (
                               <button
                                 key={r.id}
@@ -370,7 +415,7 @@ export default function LoginPage() {
                         </div>
 
                         <AnimatePresence>
-                          {role === 'professor' && (
+                          {(role === 'professor' || role === 'admin') && (
                             <motion.div
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
@@ -378,7 +423,7 @@ export default function LoginPage() {
                               className="space-y-3 overflow-hidden"
                             >
                                <label className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-                                  <ShieldCheck className="w-4 h-4" /> Professor Validation Key
+                                  <ShieldCheck className="w-4 h-4" /> {role === 'professor' ? 'Professor' : 'Admin'} Validation Key
                               </label>
                               <input
                                 type="password"
@@ -386,7 +431,7 @@ export default function LoginPage() {
                                 placeholder="Validation Key"
                                 value={professorKey}
                                 onChange={(e) => setProfessorKey(e.target.value)}
-                                required={role === 'professor'}
+                                required={role === 'professor' || role === 'admin'}
                               />
                             </motion.div>
                           )}
@@ -512,9 +557,31 @@ export default function LoginPage() {
                     <motion.div 
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 p-6 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/40 flex items-center gap-3"
+                      className="bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 p-6 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest border border-rose-100 dark:border-rose-900/40 flex flex-col gap-3"
                     >
-                      <AlertCircle className="w-5 h-5 shrink-0" /> {error}
+                      <div className="flex items-center gap-3">
+                        <AlertCircle className="w-5 h-5 shrink-0" /> {error}
+                      </div>
+                      {unverifiedUser && (
+                        <button
+                          type="button"
+                          onClick={handleResendVerification}
+                          disabled={resendLoading}
+                          className="text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest hover:underline text-left disabled:opacity-50"
+                        >
+                          {resendLoading ? 'Sending...' : 'Resend verification email →'}
+                        </button>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {forgotSuccess && !error && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 p-6 rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-900/40 flex items-center gap-3"
+                    >
+                      <CheckCircle2 className="w-5 h-5 shrink-0" /> {forgotSuccess}
                     </motion.div>
                   )}
 

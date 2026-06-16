@@ -23,6 +23,7 @@ export interface Course {
   description: string;
   professorId: string;
   professorName: string;
+  professorPhotoURL?: string;
   materials: { name: string; url: string; type: string }[];
   createdAt: any;
   skills?: string[];

@@ -812,7 +812,7 @@ export default function MentorshipPage() {
                      className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-extrabold glass px-4 py-2 rounded-2xl text-[10px] uppercase tracking-widest border-indigo-100 shadow-sm hover:bg-indigo-600 hover:text-white transition-all active:scale-95 cursor-pointer"
                    >
                      <Star className="w-3.5 h-3.5 fill-current" />
-                     {mentor.rating ? mentor.rating.toFixed(1) : "5.0"}
+                     {(mentor.rating !== undefined && mentor.rating !== null) ? mentor.rating.toFixed(1) : "0.0"}
                    </button>
                    <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[8px] font-black uppercase tracking-[0.2em] border border-emerald-100">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active

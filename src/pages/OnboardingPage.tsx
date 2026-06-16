@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { updateProfile } from "firebase/auth";
+import { auth, db } from "../services/firebase";
 import { uploadFile } from "../services/storageService";
 import { motion } from "motion/react";
 import { toast } from "sonner";
@@ -243,6 +244,15 @@ export default function OnboardingPage() {
       const finalSpecialization = profile.role === 'student'
         ? `${univName} - ${facName} (${specName})`
         : formData.specialization;
+
+      try {
+        await updateProfile(auth.currentUser!, {
+          displayName: formData.fullName,
+          photoURL: finalPhotoURL
+        });
+      } catch (authErr) {
+        console.error("Auth profile update error:", authErr);
+      }
 
       await updateDoc(doc(db, "users", user.uid), {
         ...formData,
