@@ -294,7 +294,7 @@ export default function OnboardingPage() {
                 {s === 1 ? "Identity" : s === 2 ? "Academic" : "Completion"}
               </span>
               {s < 3 && (
-                <div className={`absolute left-1/2 top-5 w-full h-[2px] -z-0 ${step > s ? "bg-green-500" : "bg-[var(--glass-border)]"}`}></div>
+                <div className={`absolute left-1/2 top-5 w-full h-[2px] -z-0 ${step > s ? "bg-green-500" : "bg-slate-200 dark:bg-slate-800"}`}></div>
               )}
             </div>
           ))}
@@ -304,7 +304,7 @@ export default function OnboardingPage() {
           key={step}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="glass rounded-[2.5rem] shadow-xl shadow-indigo-900/10 p-10 md:p-16 border border-[var(--glass-border)]"
+          className="glass rounded-[2.5rem] shadow-xl shadow-indigo-900/10 p-10 md:p-16 border border-slate-200 dark:border-slate-800"
         >
           {step === 1 && (
             <div className="space-y-8 text-center">
@@ -332,7 +332,7 @@ export default function OnboardingPage() {
                   <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Full Name</label>
                   <input 
                     type="text" 
-                    className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                    className="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                     value={formData.fullName}
                     onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                   />
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
                       <div className="relative">
                         <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
                         <select
-                          className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                          className="w-full p-4 pl-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
                           value={selectedUniv}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -379,9 +379,9 @@ export default function OnboardingPage() {
                             setCustomSpec("");
                           }}
                         >
-                          <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select University</option>
+                          <option value="" disabled className="bg-white dark:bg-slate-900 text-[var(--text-muted)]">Select University</option>
                           {UNIVERSITIES.map((univ) => (
-                            <option key={univ.id} value={univ.id} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                            <option key={univ.id} value={univ.id} className="bg-white dark:bg-slate-900 text-[var(--text-main)]">
                               {univ.name}
                             </option>
                           ))}
@@ -403,7 +403,7 @@ export default function OnboardingPage() {
                         <input 
                           type="text" 
                           placeholder="Enter university name..."
-                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          className="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                           value={customUniv}
                           onChange={(e) => setCustomUniv(e.target.value)}
                         />
@@ -423,7 +423,7 @@ export default function OnboardingPage() {
                         <div className="relative">
                           <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
                           <select
-                            className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                            className="w-full p-4 pl-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
                             value={selectedFac}
                             onChange={(e) => {
                               const val = e.target.value;
@@ -433,17 +433,17 @@ export default function OnboardingPage() {
                               setCustomSpec("");
                             }}
                           >
-                            <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select Faculty</option>
+                            <option value="" disabled className="bg-white dark:bg-slate-900 text-[var(--text-muted)]">Select Faculty</option>
                             {selectedUniv === 'other' ? (
-                              <option value="other-fac" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Faculty</option>
+                              <option value="other-fac" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">Other Faculty</option>
                             ) : (
                               <>
                                 {UNIVERSITIES.find(u => u.id === selectedUniv)?.faculties.map((fac) => (
-                                  <option key={fac.id} value={fac.id} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                                  <option key={fac.id} value={fac.id} className="bg-white dark:bg-slate-900 text-[var(--text-main)]">
                                     {fac.name}
                                   </option>
                                 ))}
-                                <option value="other-fac" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Faculty</option>
+                                <option value="other-fac" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">Other Faculty</option>
                               </>
                             )}
                           </select>
@@ -465,7 +465,7 @@ export default function OnboardingPage() {
                         <input 
                           type="text" 
                           placeholder="Enter faculty name..."
-                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          className="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                           value={customFac}
                           onChange={(e) => setCustomFac(e.target.value)}
                         />
@@ -485,7 +485,7 @@ export default function OnboardingPage() {
                         <div className="relative">
                           <BookOpen className="absolute left-4 top-4 w-5 h-5 text-indigo-400 z-10 pointer-events-none" />
                           <select
-                            className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
+                            className="w-full p-4 pl-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] appearance-none cursor-pointer"
                             value={selectedSpec}
                             onChange={(e) => {
                               const val = e.target.value;
@@ -493,19 +493,19 @@ export default function OnboardingPage() {
                               setCustomSpec("");
                             }}
                           >
-                            <option value="" disabled className="bg-[var(--bg-app)] text-[var(--text-muted)]">Select Specialization</option>
+                            <option value="" disabled className="bg-white dark:bg-slate-900 text-[var(--text-muted)]">Select Specialization</option>
                             {selectedFac === 'other-fac' || selectedUniv === 'other' ? (
-                              <option value="other-spec" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Specialization</option>
+                              <option value="other-spec" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">Other Specialization</option>
                             ) : (
                               <>
                                 {UNIVERSITIES.find(u => u.id === selectedUniv)
                                   ?.faculties.find(f => f.id === selectedFac)
                                   ?.specializations.map((spec) => (
-                                    <option key={spec} value={spec} className="bg-[var(--bg-app)] text-[var(--text-main)]">
+                                    <option key={spec} value={spec} className="bg-white dark:bg-slate-900 text-[var(--text-main)]">
                                       {spec}
                                     </option>
                                   ))}
-                                <option value="other-spec" className="bg-[var(--bg-app)] text-[var(--text-main)]">Other Specialization</option>
+                                <option value="other-spec" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">Other Specialization</option>
                               </>
                             )}
                           </select>
@@ -527,7 +527,7 @@ export default function OnboardingPage() {
                         <input 
                           type="text" 
                           placeholder="Enter specialization name..."
-                          className="w-full p-4 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                          className="w-full p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                           value={customSpec}
                           onChange={(e) => setCustomSpec(e.target.value)}
                         />
@@ -544,7 +544,7 @@ export default function OnboardingPage() {
                       <input 
                         type="text" 
                         placeholder="e.g. Department of Mathematics and Computer Science"
-                        className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
+                        className="w-full p-4 pl-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)]"
                         value={formData.specialization}
                         onChange={(e) => setFormData({...formData, specialization: e.target.value})}
                       />
@@ -553,12 +553,12 @@ export default function OnboardingPage() {
                 )}
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Short Description (Bio)</label>
+                  <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Short Description (Bio)</label>
                   <div className="relative">
                     <FileText className="absolute left-4 top-4 w-5 h-5 text-indigo-400" />
                     <textarea 
                       placeholder="Tell us a few words about yourself..."
-                      className="w-full p-4 pl-12 bg-[var(--bg-app)]/50 border border-[var(--glass-border)] rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] min-h-[120px]"
+                      className="w-full p-4 pl-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none font-bold text-[var(--text-main)] min-h-[120px]"
                       value={formData.bio}
                       onChange={(e) => setFormData({...formData, bio: e.target.value})}
                     />

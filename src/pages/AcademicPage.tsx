@@ -229,7 +229,7 @@ export default function AcademicPage() {
                 <input
                   type="text"
                   required
-                  className="w-full px-8 py-5 bg-[var(--bg-app)]/60 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm uppercase tracking-tight transition-all text-[var(--text-main)]"
+                  className="w-full px-8 py-5 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm uppercase tracking-tight transition-all text-[var(--text-main)]"
                   placeholder="e.g., Cloud Systems & Artificial Intelligence"
                   value={newCourse.title}
                   onChange={(e) =>
@@ -243,7 +243,7 @@ export default function AcademicPage() {
                 </label>
                 <textarea
                   required
-                  className="w-full px-8 py-5 bg-[var(--bg-app)]/60 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-medium h-40 resize-none transition-all shadow-inner text-[var(--text-main)]"
+                  className="w-full px-8 py-5 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-medium h-40 resize-none transition-all shadow-inner text-[var(--text-main)]"
                   placeholder="Define the purpose and learning outcomes..."
                   value={newCourse.description}
                   onChange={(e) =>
@@ -257,7 +257,7 @@ export default function AcademicPage() {
                 </label>
                 <input
                   type="text"
-                  className="w-full px-8 py-5 bg-[var(--bg-app)]/60 border border-slate-100 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm uppercase tracking-tight transition-all text-[var(--text-main)]"
+                  className="w-full px-8 py-5 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm uppercase tracking-tight transition-all text-[var(--text-main)]"
                   placeholder="e.g., Baze de date, SQL, Firebase, React, Backend"
                   value={newCourse.skillsText}
                   onChange={(e) =>
@@ -368,7 +368,7 @@ export default function AcademicPage() {
 
               <div className="flex items-center justify-between pt-8 border-t border-[var(--glass-border)]">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-center text-[var(--text-muted)] overflow-hidden shadow-2xl glass">
+                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-[var(--text-muted)] overflow-hidden shadow-2xl glass">
                     <img
                       src={course.professorPhotoURL || `https://picsum.photos/seed/${course.professorId}/128/128`}
                       alt=""
@@ -457,23 +457,23 @@ export default function AcademicPage() {
               </button>
 
               <div className="flex items-center gap-5 mb-8">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-650 flex items-center justify-center text-white shadow-lg">
+                <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg">
                   <Edit2 className="w-7 h-7" />
                 </div>
-                <h3 className="text-3xl font-black tracking-tighter uppercase text-slate-900">
+                <h3 className="text-3xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">
                   Edit Academic Course
                 </h3>
               </div>
 
               <form onSubmit={handleUpdateCourse} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">
+                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em] ml-2">
                     Course Title
                   </label>
                   <input
                     type="text"
                     required
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-bold text-sm text-slate-900 transition-all"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-bold text-sm text-slate-900 dark:text-white transition-all"
                     placeholder="e.g., Cloud Systems & Artificial Intelligence"
                     value={editCourseData.title}
                     onChange={(e) =>
@@ -482,12 +482,12 @@ export default function AcademicPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">
+                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em] ml-2">
                     Description
                   </label>
                   <textarea
                     required
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-medium h-36 resize-none transition-all text-slate-900"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-medium h-36 resize-none transition-all text-slate-900 dark:text-white"
                     placeholder="Define the purpose and learning outcomes..."
                     value={editCourseData.description}
                     onChange={(e) =>
@@ -496,12 +496,12 @@ export default function AcademicPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">
+                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.3em] ml-2">
                     Skill-uri Dobândite / Acquired Skills (separate prin virgulă)
                   </label>
                   <input
                     type="text"
-                    className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-bold text-sm text-slate-900 transition-all"
+                    className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-bold text-sm text-slate-900 dark:text-white transition-all"
                     placeholder="e.g., Baze de date, SQL, Firebase, React, Backend"
                     value={editCourseData.skillsText}
                     onChange={(e) =>
@@ -535,7 +535,7 @@ export default function AcademicPage() {
                   </button>
                   <button
                     type="submit"
-                    className="px-10 py-4 bg-indigo-650 text-white font-bold rounded-[1.5rem] shadow-lg hover:bg-indigo-750 transition-all active:scale-95 uppercase tracking-[0.2em] text-[10px] cursor-pointer"
+                    className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-[1.5rem] shadow-lg hover:bg-indigo-700 transition-all active:scale-95 uppercase tracking-[0.2em] text-[10px] cursor-pointer"
                   >
                     Save Changes
                   </button>

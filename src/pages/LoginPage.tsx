@@ -298,7 +298,7 @@ export default function LoginPage() {
                     <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-600 transition-colors">Email</label>
                     <input
                       type="email"
-                      className="w-full px-8 py-5 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 text-[var(--text-main)]"
+                      className="w-full px-8 py-5 bg-white/80 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 text-[var(--text-main)]"
                       placeholder="name@university.com"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
@@ -343,7 +343,7 @@ export default function LoginPage() {
                       setError("");
                       setForgotSuccess("");
                     }}
-                    className="text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.2em] border-b border-indigo-100 dark:border-indigo-900/40 pb-1 hover:text-indigo-855"
+                    className="text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.2em] border-b border-indigo-100 dark:border-indigo-900/40 pb-1 hover:text-indigo-800"
                   >
                     Back to Sign In
                   </button>
@@ -379,7 +379,7 @@ export default function LoginPage() {
                            <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-600 transition-colors">Full Name</label>
                           <input
                             type="text"
-                            className="w-full px-8 py-5 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 uppercase tracking-tight text-[var(--text-main)]"
+                            className="w-full px-8 py-5 bg-white/80 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 uppercase tracking-tight text-[var(--text-main)]"
                             placeholder="e.g. John Doe"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
@@ -444,7 +444,7 @@ export default function LoginPage() {
                      <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-600 transition-colors">Email</label>
                     <input
                       type="email"
-                      className="w-full px-8 py-5 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 text-[var(--text-main)]"
+                      className="w-full px-8 py-5 bg-white/80 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 text-[var(--text-main)]"
                       placeholder="name@university.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -472,7 +472,7 @@ export default function LoginPage() {
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
-                        className="w-full px-8 py-5 pr-16 glass rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 tracking-[0.3em] placeholder:tracking-normal text-[var(--text-main)]"
+                        className="w-full px-8 py-5 pr-16 bg-white/80 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 dark:focus:ring-indigo-500/5 focus:border-indigo-500 transition-all outline-none font-black text-sm shadow-sm placeholder:text-slate-500 dark:placeholder:text-slate-600 tracking-[0.3em] placeholder:tracking-normal text-[var(--text-main)]"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -510,7 +510,7 @@ export default function LoginPage() {
                                  strengthCount === 3 ? "Strong" : "Excellent"}
                               </span>
                             </div>
-                            <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-850 rounded-full overflow-hidden flex gap-1">
+                            <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex gap-1">
                               {[1, 2, 3, 4].map((index) => (
                                 <div 
                                   key={index}
@@ -529,7 +529,7 @@ export default function LoginPage() {
                           </div>
 
                           {/* Requirements Checklist */}
-                          <div className="grid grid-cols-2 gap-2 glass p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                          <div className="grid grid-cols-2 gap-2 bg-white/40 dark:bg-slate-950/20 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
                             {[
                               { label: "At least 6 characters", valid: hasMinLength },
                               { label: "At least one number", valid: hasNumber },

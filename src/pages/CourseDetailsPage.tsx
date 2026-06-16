@@ -563,7 +563,7 @@ export default function CourseDetailsPage() {
                                      type="text" 
                                      required
                                      placeholder="Type a comment in English..." 
-                                     className="flex-1 px-5 py-4 bg-white border border-slate-100 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 text-xs font-medium text-[var(--text-main)]"
+                                     className="flex-1 px-5 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 text-xs font-medium text-[var(--text-main)]"
                                      value={newCommentText}
                                      onChange={(e) => setNewCommentText(e.target.value)}
                                    />
@@ -755,15 +755,15 @@ export default function CourseDetailsPage() {
                               <p className="text-xs text-slate-400 font-medium py-8 text-center glass rounded-2xl border border-dashed border-slate-200">No submissions received yet for this assignment.</p>
                             ) : (
                               submissions.filter(s => s.assignmentId === a.id).map(sub => (
-                                <div key={sub.id} className="glass p-6 rounded-[2rem] border border-slate-100/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 transition-all bg-[var(--bg-app)]/20 shadow-sm text-left">
+                                <div key={sub.id} className="glass p-6 rounded-[2rem] border border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 transition-all bg-[var(--bg-app)]/20 shadow-sm text-left">
                                   <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-sm uppercase">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm uppercase">
                                       {sub.studentName?.charAt(0) || "S"}
                                     </div>
                                     <div className="space-y-1 text-left">
-                                      <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{sub.studentName}</p>
+                                      <p className="text-sm font-black text-[var(--text-main)] uppercase tracking-tight">{sub.studentName}</p>
                                       <p className="text-[10px] text-[var(--text-muted)] font-medium flex flex-wrap items-center gap-2">
-                                        <span>File: <a href={sub.fileUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-650 hover:underline font-bold">{sub.fileName}</a></span>
+                                        <span>File: <a href={sub.fileUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline font-bold">{sub.fileName}</a></span>
                                         <span className="text-slate-300">•</span> 
                                         <span>Submitted: {sub.submittedAt?.toDate ? format(sub.submittedAt.toDate(), "d MMM HH:mm") : "Just now"}</span>
                                       </p>
@@ -773,7 +773,7 @@ export default function CourseDetailsPage() {
                                   <div className="flex items-center gap-3 self-end sm:self-center">
                                     {sub.status === 'graded' ? (
                                       <div className="flex items-center gap-2">
-                                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-150 px-3 py-1.5 rounded-full uppercase tracking-widest">
+                                        <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 px-3 py-1.5 rounded-full uppercase tracking-widest">
                                           Grade: {sub.grade}/10
                                         </span>
                                         <button
@@ -781,7 +781,7 @@ export default function CourseDetailsPage() {
                                             setGradingSubmission(sub);
                                             setGradeData({ grade: sub.grade || 10, feedback: sub.feedback || '' });
                                           }}
-                                          className="text-[9px] font-black text-indigo-600 hover:text-indigo-850 uppercase tracking-widest px-3 py-1.5 border border-indigo-150 rounded-full hover:bg-indigo-50 transition-all"
+                                          className="text-[9px] font-black text-indigo-600 hover:text-indigo-800 uppercase tracking-widest px-3 py-1.5 border border-indigo-200 dark:border-indigo-900/40 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-950/20 transition-all"
                                         >
                                           Edit Grade
                                         </button>
@@ -902,24 +902,24 @@ export default function CourseDetailsPage() {
                   ) : (
                     <div className="grid grid-cols-1 gap-6">
                       {allCompletions.map((comp) => (
-                        <div key={comp.id} className="glass p-8 rounded-[2.5rem] border border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-indigo-200 hover:shadow-glow transition-all">
+                        <div key={comp.id} className="glass p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-indigo-200 hover:shadow-glow transition-all">
                           <div className="space-y-3">
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black text-lg uppercase shadow-lg">
                                 {comp.studentName.charAt(0)}
                               </div>
                               <div>
-                                <h4 className="text-xl font-black text-slate-800 uppercase tracking-tight">{comp.studentName}</h4>
+                                <h4 className="text-xl font-black text-[var(--text-main)] uppercase tracking-tight">{comp.studentName}</h4>
                                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Student ID: {comp.studentId.substring(0, 8)}</p>
                               </div>
                             </div>
                             <div className="flex flex-wrap gap-2 mt-1">
-                              <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase tracking-widest border border-indigo-150">
+                              <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-950/20 px-3 py-1 rounded-full uppercase tracking-widest border border-indigo-200 dark:border-indigo-900/40">
                                 AI Test Score: {comp.quizScore} / {comp.quizTotal}
                               </span>
                               {comp.status === 'graded' ? (
                                 <>
-                                  <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-150 flex items-center gap-1">
+                                  <span className="text-[9px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-200 dark:border-emerald-900/40 flex items-center gap-1">
                                     <CheckCircle className="w-3 h-3 text-emerald-500" /> Nota Finală: {comp.grade} / 10
                                   </span>
                                   {comp.feedback && (
@@ -929,7 +929,7 @@ export default function CourseDetailsPage() {
                                   )}
                                 </>
                               ) : (
-                                <span className="text-[9px] font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-full uppercase tracking-widest border border-amber-150 animate-pulse">
+                                <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-950/20 px-3 py-1 rounded-full uppercase tracking-widest border border-amber-200 dark:border-amber-900/40 animate-pulse">
                                   În Așteptare Notă Finală
                                 </span>
                               )}
@@ -995,9 +995,9 @@ export default function CourseDetailsPage() {
                       </div>
 
                       {completion.feedback && (
-                        <div className="glass p-8 rounded-[2.5rem] border border-slate-150 max-w-lg mx-auto text-left relative bg-white/60">
-                          <div className="absolute -top-3 left-8 px-3 py-1 bg-indigo-650 text-[8px] font-black text-white uppercase tracking-[0.2em] rounded-full">Professor Remarks</div>
-                          <p className="text-xs text-slate-655 font-semibold leading-relaxed text-slate-700">"{completion.feedback}"</p>
+                        <div className="glass p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 max-w-lg mx-auto text-left relative bg-white/60 dark:bg-slate-900/60">
+                          <div className="absolute -top-3 left-8 px-3 py-1 bg-indigo-600 text-[8px] font-black text-white uppercase tracking-[0.2em] rounded-full">Professor Remarks</div>
+                          <p className="text-xs text-[var(--text-main)] font-semibold leading-relaxed">"{completion.feedback}"</p>
                         </div>
                       )}
 
@@ -1006,7 +1006,7 @@ export default function CourseDetailsPage() {
                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Unlocked Skills</p>
                           <div className="flex flex-wrap gap-3">
                             {completion.skills.map((s) => (
-                              <span key={s} className="px-5 py-2.5 bg-emerald-50 text-emerald-700 border border-emerald-150 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                              <span key={s} className="px-5 py-2.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                                 <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> {s}
                               </span>
                             ))}
@@ -1071,7 +1071,7 @@ export default function CourseDetailsPage() {
                          </button>
                          <button 
                            onClick={() => {setQuizScore(null); setCurrentQuizStep(0); setSelectedAnswer(null);}} 
-                           className="px-10 py-5 bg-indigo-650 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-2xl"
+                           className="px-10 py-5 bg-indigo-600 text-white rounded-[1.8rem] text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-2xl"
                          >
                            <History className="w-4 h-4" /> Retry Quiz
                          </button>
@@ -1173,25 +1173,25 @@ export default function CourseDetailsPage() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="bg-white max-w-lg w-full rounded-[3.5rem] shadow-2xl p-12 space-y-10 relative overflow-hidden border border-slate-200 text-slate-900"
+               className="bg-white dark:bg-slate-900 max-w-lg w-full rounded-[3.5rem] shadow-2xl p-12 space-y-10 relative overflow-hidden border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
             >
                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-60" />
                <div className="flex justify-between items-center">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black text-indigo-650 uppercase tracking-[0.4em]">Evaluation System</p>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter font-display uppercase">Portfolio Evaluation</h3>
+                    <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.4em]">Evaluation System</p>
+                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter font-display uppercase">Portfolio Evaluation</h3>
                   </div>
-                  <button onClick={() => setGradingSubmission(null)} className="p-4 hover:bg-slate-100 rounded-full text-slate-500 transition-colors cursor-pointer"><X className="w-6 h-6" /></button>
+                  <button onClick={() => setGradingSubmission(null)} className="p-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-500 transition-colors cursor-pointer"><X className="w-6 h-6" /></button>
                </div>
 
-               <div className="p-6 bg-slate-50 border border-slate-150 rounded-[2.5rem] flex items-center gap-5">
+               <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2.5rem] flex items-center gap-5">
                   <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl shadow-indigo-500/20">
                     {gradingSubmission.studentName.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-xl font-black text-slate-900 uppercase tracking-tight">{gradingSubmission.studentName}</p>
+                    <p className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{gradingSubmission.studentName}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[9px] text-indigo-650 font-black uppercase tracking-widest border border-indigo-150 px-2 py-0.5 rounded-md bg-indigo-50">ID: {gradingSubmission.studentId.substring(0, 8)}</span>
+                      <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest border border-indigo-200 dark:border-indigo-900/40 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/20">ID: {gradingSubmission.studentId.substring(0, 8)}</span>
                       <span className="text-[9px] text-slate-500 font-bold uppercase">{format(gradingSubmission.submittedAt?.toDate() || new Date(), "d MMM HH:mm")}</span>
                     </div>
                   </div>
@@ -1200,7 +1200,7 @@ export default function CourseDetailsPage() {
                <div className="space-y-8">
                   <div className="space-y-3">
                     <div className="flex justify-between px-2">
-                       <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Academic Grade (1-10)</label>
+                       <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Academic Grade (1-10)</label>
                        <span className="text-xs font-black text-indigo-600">{gradeData.grade}/10</span>
                     </div>
                     <input 
@@ -1208,21 +1208,21 @@ export default function CourseDetailsPage() {
                       min="1" 
                       max="10" 
                       step="1"
-                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                      className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
                       value={gradeData.grade}
                       onChange={(e) => setGradeData({...gradeData, grade: parseInt(e.target.value)})}
                     />
-                    <div className="flex justify-between text-[10px] font-black text-slate-500 px-1">
+                    <div className="flex justify-between text-[10px] font-black text-slate-500 dark:text-slate-400 px-1">
                       <span>MIN: 1</span>
                       <span>MAX: 10</span>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">Feedback & Remarks</label>
+                    <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Feedback & Remarks</label>
                     <textarea 
                       placeholder="Your analysis here..." 
-                      className="w-full p-6 bg-slate-50 border border-slate-200 rounded-[2rem] text-sm font-semibold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-500/10 min-h-[150px] placeholder:text-slate-400 focus:bg-white transition-all resize-none shadow-sm"
+                      className="w-full p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2rem] text-sm font-semibold text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-indigo-500/10 min-h-[150px] placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-950 transition-all resize-none shadow-sm"
                       value={gradeData.feedback}
                       onChange={(e) => setGradeData({...gradeData, feedback: e.target.value})}
                     />
@@ -1231,7 +1231,7 @@ export default function CourseDetailsPage() {
 
                <button 
                  onClick={handleGrade}
-                 className="w-full py-6 bg-indigo-650 text-white rounded-[2rem] font-black text-lg shadow-[0_20px_50px_rgba(79,70,229,0.3)] hover:bg-slate-800 transition-all transform active:scale-95 uppercase tracking-[0.2em] text-[12px] cursor-pointer"
+                 className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-lg shadow-[0_20px_50px_rgba(79,70,229,0.3)] hover:bg-slate-800 transition-all transform active:scale-95 uppercase tracking-[0.2em] text-[12px] cursor-pointer"
                >
                  Submit Grade
                </button>
@@ -1245,26 +1245,26 @@ export default function CourseDetailsPage() {
                initial={{ opacity: 0, scale: 0.9, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="bg-white max-w-lg w-full rounded-[3.5rem] shadow-2xl p-12 space-y-10 relative overflow-hidden border border-slate-200 text-slate-900"
+               className="bg-white dark:bg-slate-900 max-w-lg w-full rounded-[3.5rem] shadow-2xl p-12 space-y-10 relative overflow-hidden border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
             >
                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-60" />
                <div className="flex justify-between items-center">
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black text-emerald-650 uppercase tracking-[0.4em]">Final Course Evaluation</p>
-                    <h3 className="text-3xl font-black text-slate-900 tracking-tighter font-display uppercase">Course Evaluation</h3>
+                    <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.4em]">Final Course Evaluation</p>
+                    <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter font-display uppercase">Course Completion</h3>
                   </div>
-                  <button onClick={() => setGradingCompletion(null)} className="p-4 hover:bg-slate-100 rounded-full text-slate-500 transition-colors cursor-pointer"><X className="w-6 h-6" /></button>
+                  <button onClick={() => setGradingCompletion(null)} className="p-4 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-500 transition-colors cursor-pointer"><X className="w-6 h-6" /></button>
                </div>
 
-               <div className="p-6 bg-slate-50 border border-slate-150 rounded-[2.5rem] flex items-center gap-5">
+               <div className="p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2.5rem] flex items-center gap-5">
                   <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-2xl shadow-emerald-500/20">
                     {gradingCompletion.studentName.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-xl font-black text-slate-900 uppercase tracking-tight">{gradingCompletion.studentName}</p>
+                    <p className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{gradingCompletion.studentName}</p>
                     <div className="flex flex-col gap-1 mt-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-emerald-650 font-black uppercase tracking-widest border border-emerald-150 px-2 py-0.5 rounded-md bg-emerald-50">ID: {gradingCompletion.studentId.substring(0, 8)}</span>
+                        <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-widest border border-emerald-250 dark:border-emerald-900/40 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/20">ID: {gradingCompletion.studentId.substring(0, 8)}</span>
                         <span className="text-[9px] text-slate-500 font-bold uppercase">{format(gradingCompletion.submittedAt?.toDate() || new Date(), "d MMM HH:mm")}</span>
                       </div>
                       <span className="text-[10px] text-slate-600 font-bold mt-1">
@@ -1309,10 +1309,10 @@ export default function CourseDetailsPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">Feedback & Remarks</label>
+                    <label className="text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest ml-1">Feedback & Remarks</label>
                     <textarea 
                       placeholder="Enter student feedback..." 
-                      className="w-full p-6 bg-slate-50 border border-slate-200 rounded-[2rem] text-sm font-semibold text-slate-900 outline-none focus:ring-4 focus:ring-emerald-500/10 min-h-[120px] placeholder:text-slate-400 focus:bg-white transition-all resize-none shadow-sm"
+                      className="w-full p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2rem] text-sm font-semibold text-slate-900 dark:text-white outline-none focus:ring-4 focus:ring-emerald-500/10 min-h-[120px] placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-905 transition-all resize-none shadow-sm"
                       value={finalGradeData.feedback}
                       onChange={(e) => setFinalGradeData({...finalGradeData, feedback: e.target.value})}
                     />

@@ -254,7 +254,7 @@ export default function ProfilePage() {
                   <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-1">{profile.role === 'professor' ? 'Expertise Field' : 'Academic Field'}</p>
                   {isEditing ? (
                     <input 
-                      className="w-full bg-[var(--bg-app)] border border-slate-100 dark:border-slate-800 rounded-xl px-4 py-2 text-sm font-black text-[var(--text-main)] outline-none uppercase tracking-tight"
+                      className="w-full bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm font-black text-[var(--text-main)] outline-none uppercase tracking-tight"
                       value={editData.specialization}
                       onChange={(e) => setEditData({...editData, specialization: e.target.value})}
                     />
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                <div className="space-y-3">
                  <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">Personal Biography (Bio)</p>
                  <textarea 
-                   className="w-full bg-[var(--bg-app)] border border-slate-100 dark:border-slate-800 rounded-[1.8rem] px-6 py-4 text-sm font-medium text-[var(--text-main)] outline-none min-h-[120px] shadow-inner"
+                   className="w-full bg-[var(--bg-app)] border border-slate-200 dark:border-slate-800 rounded-[1.8rem] px-6 py-4 text-sm font-medium text-[var(--text-main)] outline-none min-h-[120px] shadow-inner"
                    value={editData.bio}
                    onChange={(e) => setEditData({...editData, bio: e.target.value})}
                    placeholder="Tell us about yourself..."

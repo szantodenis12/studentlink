@@ -157,7 +157,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
 
   return (
     <div className="glass bg-[var(--bg-app)]/20 p-8 rounded-[2.5rem] border border-indigo-100/40 space-y-6">
-      <h5 className="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-100/50 pb-4">Discussion Thread</h5>
+      <h5 className="text-sm font-black text-[var(--text-main)] uppercase tracking-widest border-b border-slate-200 dark:border-slate-800 pb-4">Discussion Thread</h5>
       
       {/* Comments List */}
       <div className="space-y-6 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
@@ -181,7 +181,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                   {/* Comment Bubble */}
                   <div className="flex-1 space-y-1">
                     <div className="flex justify-between items-baseline">
-                      <span className="text-xs font-black text-slate-800 uppercase tracking-tight">{comment.authorName}</span>
+                      <span className="text-xs font-black text-[var(--text-main)] uppercase tracking-tight">{comment.authorName}</span>
                       <span className="text-[8px] font-bold text-slate-400 uppercase">
                         {comment.createdAt?.toDate 
                           ? formatDistanceToNow(comment.createdAt.toDate(), { addSuffix: true }) 
@@ -193,7 +193,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                       <div className="flex gap-2 pt-2">
                         <input
                           type="text"
-                          className="flex-1 bg-white p-2.5 rounded-xl border border-indigo-100 outline-none text-xs font-semibold"
+                          className="flex-1 bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none text-xs font-semibold text-[var(--text-main)]"
                           value={editingCommentText}
                           onChange={(e) => setEditingCommentText(e.target.value)}
                         />
@@ -211,7 +211,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                         </button>
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-600 font-medium leading-relaxed">{comment.content}</p>
+                      <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">{comment.content}</p>
                     )}
 
                     {/* Actions Row */}
@@ -301,7 +301,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                                 "flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all",
                                 userReacted 
                                   ? "bg-indigo-50 border-indigo-100 text-indigo-600 scale-105" 
-                                  : "bg-white/40 border-slate-100 text-slate-500 hover:bg-indigo-50/50"
+                                  : "bg-white/40 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:bg-indigo-50/50 dark:hover:bg-slate-800/50"
                               )}
                             >
                               <span>{emoji}</span>
@@ -328,12 +328,12 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                         </div>
                         <div className="flex-1 space-y-1">
                           <div className="flex justify-between items-baseline">
-                            <span className="text-[10px] font-black text-slate-800 uppercase tracking-tight">{reply.authorName}</span>
+                            <span className="text-[10px] font-black text-[var(--text-main)] uppercase tracking-tight">{reply.authorName}</span>
                             <span className="text-[7px] font-bold text-slate-400 uppercase">
                               {formatDistanceToNow(reply.createdAt, { addSuffix: true })}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-600 font-medium leading-relaxed">{reply.content}</p>
+                          <p className="text-[11px] text-[var(--text-muted)] font-medium leading-relaxed">{reply.content}</p>
                         </div>
                       </div>
                     ))}
@@ -353,7 +353,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                       <input
                         type="text"
                         placeholder="Write a reply..."
-                        className="flex-1 bg-white px-4 py-2.5 rounded-xl border border-indigo-100 outline-none text-xs font-semibold shadow-inner placeholder:text-slate-400"
+                        className="flex-1 bg-white dark:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 outline-none text-xs font-semibold shadow-inner placeholder:text-slate-400 text-[var(--text-main)]"
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                       />
@@ -378,7 +378,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
         <input
           type="text"
           placeholder="Share your thoughts on this broadcast..."
-          className="flex-1 bg-white/60 dark:bg-slate-950/40 border border-indigo-100 px-5 py-3.5 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-semibold text-xs text-[var(--text-main)] shadow-inner"
+          className="flex-1 bg-white/60 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 px-5 py-3.5 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-semibold text-xs text-[var(--text-main)] shadow-inner"
           value={newCommentText}
           onChange={(e) => setNewCommentText(e.target.value)}
         />
@@ -931,7 +931,7 @@ export default function CommunityPage() {
                 <div className="flex-1 space-y-6">
                   <textarea
                     placeholder="Engage with the StudentLink community... Share notes, resources, or questions with the network."
-                    className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-950/40 border border-[var(--glass-border)] rounded-[2.5rem] p-8 min-h-[160px] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none resize-none transition-all font-medium text-lg placeholder:text-[var(--text-muted)] opacity-60 text-[var(--text-main)]"
+                    className="w-full bg-white/80 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-[2.5rem] p-8 min-h-[160px] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none resize-none transition-all font-medium text-lg placeholder:text-[var(--text-muted)] text-[var(--text-main)]"
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                   />
@@ -1200,7 +1200,7 @@ export default function CommunityPage() {
                         </label>
                         <input
                           required
-                          className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-[var(--text-main)] text-sm uppercase tracking-tight"
+                          className="w-full bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-[var(--text-main)] text-sm uppercase tracking-tight"
                           placeholder="e.g., Quantum Physics Exam Review"
                           value={meetTitle}
                           onChange={(e) => setMeetTitle(e.target.value)}
@@ -1211,15 +1211,15 @@ export default function CommunityPage() {
                           Event Type
                         </label>
                         <select
-                          className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none appearance-none font-black text-[10px] uppercase tracking-widest cursor-pointer text-[var(--text-main)]"
+                          className="w-full bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none appearance-none font-black text-[10px] uppercase tracking-widest cursor-pointer text-[var(--text-main)]"
                           value={meetType}
                           onChange={(e) => {
                             setMeetType(e.target.value as any);
                             setMeetLoc("");
                           }}
                         >
-                          <option value="online">ONLINE Presence</option>
-                          <option value="physical">PHYSICAL Presence</option>
+                          <option value="online" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">ONLINE Presence</option>
+                          <option value="physical" className="bg-white dark:bg-slate-900 text-[var(--text-main)]">PHYSICAL Presence</option>
                         </select>
                       </div>
                       <div className="space-y-3">
@@ -1229,7 +1229,7 @@ export default function CommunityPage() {
                         <input
                           type="datetime-local"
                           required
-                          className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-xs uppercase text-[var(--text-main)]"
+                          className="w-full bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-xs uppercase text-[var(--text-main)]"
                           value={meetDate}
                           onChange={(e) => setMeetDate(e.target.value)}
                         />
@@ -1244,7 +1244,7 @@ export default function CommunityPage() {
                           <div className="flex-1 relative">
                             <input
                               required
-                              className="w-full bg-[var(--bg-app)]/60 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm text-[var(--text-main)]"
+                              className="w-full bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 px-8 py-5 rounded-[2rem] focus:ring-8 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-black text-sm text-[var(--text-main)]"
                               placeholder={
                                 meetType === "online"
                                   ? "Google Meet / Zoom URL"
@@ -1623,7 +1623,7 @@ export default function CommunityPage() {
               <input
                 type="text"
                 placeholder="Type message here... Let's collaborate!"
-                className="flex-1 bg-white/70 dark:bg-slate-950/40 border border-[var(--glass-border)] px-6 py-4.5 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-semibold text-xs text-[var(--text-main)] shadow-inner"
+                className="flex-1 bg-white/70 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 px-6 py-4.5 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none font-semibold text-xs text-[var(--text-main)] shadow-inner"
                 value={newChatMessage}
                 onChange={(e) => setNewChatMessage(e.target.value)}
               />

@@ -375,7 +375,7 @@ export default function MentorshipPage() {
           {/* Onboarding / Profile Configuration Panel */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3.5rem] p-10 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
-              <GraduationCap className="w-32 h-32 text-indigo-650" />
+              <GraduationCap className="w-32 h-32 text-indigo-600" />
             </div>
 
             {!profile.isMentor ? (
@@ -391,25 +391,25 @@ export default function MentorshipPage() {
 
                 <form onSubmit={(e) => handleSaveMentorProfile(e, true)} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl pt-4">
                   <div className="space-y-4 md:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-650 dark:text-slate-300">Specialization Subjects (Comma-separated)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Specialization Subjects (Comma-separated)</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Database Systems, Web Development, Java programming"
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400"
+                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400"
                       value={mentorSubjectsText}
                       onChange={(e) => setMentorSubjectsText(e.target.value)}
                     />
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-650 dark:text-slate-300">Price per Session (RON)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Price per Session (RON)</label>
                     <div className="relative">
                       <input
                         type="number"
                         required
                         placeholder="200"
-                        className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
+                        className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
                         value={mentorPriceText}
                         onChange={(e) => setMentorPriceText(e.target.value)}
                       />
@@ -418,11 +418,11 @@ export default function MentorshipPage() {
                   </div>
 
                   <div className="space-y-4 md:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-655 dark:text-slate-300">Professional Bio / Description</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Professional Bio / Description</label>
                     <textarea
                       rows={4}
                       placeholder="Share your teaching style, field of research, or what students can expect from your mentorship sessions..."
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400"
+                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400"
                       value={mentorBioText}
                       onChange={(e) => setMentorBioText(e.target.value)}
                     />
@@ -449,25 +449,25 @@ export default function MentorshipPage() {
 
                 <form onSubmit={(e) => handleSaveMentorProfile(e, true)} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl pt-4">
                   <div className="space-y-4 md:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-650 dark:text-slate-300">Specialization Subjects (Comma-separated)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Specialization Subjects (Comma-separated)</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Database Systems, Web Development, Java programming"
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
+                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
                       value={mentorSubjectsText}
                       onChange={(e) => setMentorSubjectsText(e.target.value)}
                     />
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-650 dark:text-slate-300">Price per Session (RON)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Price per Session (RON)</label>
                     <div className="relative">
                       <input
                         type="number"
                         required
                         placeholder="200"
-                        className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
+                        className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
                         value={mentorPriceText}
                         onChange={(e) => setMentorPriceText(e.target.value)}
                       />
@@ -476,11 +476,11 @@ export default function MentorshipPage() {
                   </div>
 
                   <div className="space-y-4 md:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-655 dark:text-slate-300">Professional Bio / Description</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">Professional Bio / Description</label>
                     <textarea
                       rows={4}
                       placeholder="Brief bio..."
-                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-855 border border-slate-205 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
+                      className="w-full px-6 py-5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 outline-none text-sm font-semibold text-slate-900 dark:text-white"
                       value={mentorBioText}
                       onChange={(e) => setMentorBioText(e.target.value)}
                     />
@@ -490,14 +490,14 @@ export default function MentorshipPage() {
                     <button
                       type="submit"
                       disabled={isSubmittingMentorProfile}
-                      className="px-10 py-5 bg-indigo-600 hover:bg-indigo-705 text-white rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl cursor-pointer"
+                      className="px-10 py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 shadow-xl cursor-pointer"
                     >
                       {isSubmittingMentorProfile ? "Saving Profile..." : "Save Profile"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsEditingMentorProfile(false)}
-                      className="px-8 py-5 border border-slate-300 dark:border-slate-700 hover:bg-slate-55 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] cursor-pointer"
+                      className="px-8 py-5 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-[1.8rem] font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -533,12 +533,12 @@ export default function MentorshipPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-150 dark:border-slate-800 space-y-2">
+                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-200 dark:border-slate-800 space-y-2">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Session Billing</span>
                     <p className="text-3xl font-black text-indigo-600 dark:text-indigo-400 tracking-tight">{profile.mentorshipPrice || 200} <span className="text-xs uppercase ml-1">RON / Session</span></p>
                   </div>
 
-                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-155 dark:border-slate-800 md:col-span-2 space-y-3">
+                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-200 dark:border-slate-800 md:col-span-2 space-y-3">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Specializations</span>
                     <div className="flex flex-wrap gap-2">
                       {(profile.mentorshipSubjects || []).map((s) => (
@@ -549,7 +549,7 @@ export default function MentorshipPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-155 dark:border-slate-800 md:col-span-3 space-y-2">
+                  <div className="p-6 bg-slate-50 dark:bg-slate-800/40 rounded-[2rem] border border-slate-200 dark:border-slate-800 md:col-span-3 space-y-2">
                     <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">My Mentor Bio</span>
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-300 leading-relaxed pl-4 border-l-2 border-slate-300 dark:border-slate-700">
                       {profile.bio || "No bio description configured yet. Set a professional bio to help students connect with you."}
@@ -889,20 +889,20 @@ export default function MentorshipPage() {
                 className="bg-white w-full max-w-2xl rounded-[3rem] p-10 max-h-[85vh] overflow-y-auto custom-scrollbar border border-slate-200 flex flex-col gap-8 shadow-2xl relative text-slate-900"
               >
                 {/* Modal Header */}
-                <div className="flex justify-between items-center pb-6 border-b border-slate-150">
+                <div className="flex justify-between items-center pb-6 border-b border-slate-200">
                   <div className="space-y-1">
                     <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900">
                       Reviews & Feedback
                     </h3>
                     <p className="text-xs text-slate-500 font-medium">
-                      For <span className="font-extrabold text-indigo-650">{selectedMentorForReviews.fullName}</span>
+                      For <span className="font-extrabold text-indigo-600">{selectedMentorForReviews.fullName}</span>
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedMentorForReviews(null)}
                     className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
                   >
-                    <X className="w-5 h-5 text-slate-650" />
+                    <X className="w-5 h-5 text-slate-600" />
                   </button>
                 </div>
 
@@ -912,10 +912,10 @@ export default function MentorshipPage() {
                     reviews.map((r) => (
                       <div
                         key={r.id}
-                        className="p-6 bg-slate-50 rounded-2xl border border-slate-150 flex gap-4"
+                        className="p-6 bg-slate-50 rounded-2xl border border-slate-200 flex gap-4"
                       >
                         <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 overflow-hidden shrink-0 flex items-center justify-center font-black text-indigo-700 text-sm">
-                          {r.studentName.charAt(0)}
+                           {r.studentName.charAt(0)}
                         </div>
                         <div className="space-y-2 flex-1">
                           <div className="flex justify-between items-center">
@@ -925,7 +925,7 @@ export default function MentorshipPage() {
                               <span className="font-black">{r.rating}.0</span>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-650 leading-relaxed font-medium">
+                          <p className="text-xs text-slate-600 leading-relaxed font-medium">
                             {r.comment}
                           </p>
                         </div>
@@ -942,7 +942,7 @@ export default function MentorshipPage() {
 
                 {/* Add Review Form (Only for Students) */}
                 {profile?.role === "student" && (
-                  <form onSubmit={handleSubmitReview} className="space-y-6 border-t border-slate-150 pt-8">
+                  <form onSubmit={handleSubmitReview} className="space-y-6 border-t border-slate-200 pt-8">
                     <div className="space-y-2">
                       <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Submit a Review</h4>
                       <p className="text-xs text-slate-500">Share your learning experience with this professor.</p>
@@ -976,14 +976,14 @@ export default function MentorshipPage() {
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Write your feedback here..."
                         rows={3}
-                        className="w-full p-5 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none shadow-sm transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-405"
+                        className="w-full p-5 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none shadow-sm transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={submittingReview}
-                      className="w-full py-5 bg-indigo-650 hover:bg-indigo-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                      className="w-full py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                     >
                       {submittingReview ? "Submitting..." : "Submit Review"}
                     </button>
@@ -1010,20 +1010,20 @@ export default function MentorshipPage() {
               onClick={(e) => e.stopPropagation()}
               className="bg-white w-full max-w-md rounded-[3rem] p-10 border border-slate-200 flex flex-col gap-6 shadow-2xl relative text-slate-900"
             >
-              <div className="flex justify-between items-center pb-4 border-b border-slate-150">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200">
                 <div>
                   <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">
                     Secure Checkout
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">
-                    Mentorship Booking with <span className="font-bold text-indigo-650">{selectedMentorForBooking.fullName}</span>
+                    Mentorship Booking with <span className="font-bold text-indigo-600">{selectedMentorForBooking.fullName}</span>
                   </p>
                 </div>
                 <button
                   onClick={() => setShowCardModal(false)}
                   className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
                 >
-                  <X className="w-5 h-5 text-slate-650" />
+                  <X className="w-5 h-5 text-slate-600" />
                 </button>
               </div>
 
@@ -1037,7 +1037,7 @@ export default function MentorshipPage() {
                     <p className="text-xl font-black text-indigo-600 leading-none mt-1">{selectedMentorForBooking.mentorshipPrice || 200} RON</p>
                   </div>
                 </div>
-                <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[8px] font-black uppercase tracking-widest border border-indigo-150 flex items-center gap-1">
+                <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[8px] font-black uppercase tracking-widest border border-indigo-200 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" /> Stripe Secured
                 </div>
               </div>
@@ -1141,20 +1141,20 @@ export default function MentorshipPage() {
               onClick={(e) => e.stopPropagation()}
               className="bg-white w-full max-w-md rounded-[3rem] p-10 border border-slate-200 flex flex-col gap-6 shadow-2xl relative text-slate-900"
             >
-              <div className="flex justify-between items-center pb-4 border-b border-slate-150">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200">
                 <div>
                   <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">
                     Schedule online meeting
                   </h3>
                   <p className="text-xs text-slate-500 font-medium">
-                    With Professor <span className="font-bold text-indigo-650">{selectedBookingForScheduling.mentorName}</span>
+                    With Professor <span className="font-bold text-indigo-600">{selectedBookingForScheduling.mentorName}</span>
                   </p>
                 </div>
                 <button
                   onClick={() => setShowSchedulerModal(false)}
                   className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
                 >
-                  <X className="w-5 h-5 text-slate-650" />
+                  <X className="w-5 h-5 text-slate-600" />
                 </button>
               </div>
 
