@@ -396,12 +396,12 @@ const Dashboard = () => {
           >
             {activeDetailTab === 'modules' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">
+                    <h4 className="text-xl font-black text-[var(--text-main)] tracking-tight uppercase">
                       {isProfessor ? 'My Active Courses' : 'Active Enrolled Modules'}
                     </h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">
+                    <p className="text-xs text-[var(--text-muted)] font-medium">
                       {isProfessor ? 'Courses you have created and are currently teaching.' : 'Your current universe of enrolled academic courses.'}
                     </p>
                   </div>
@@ -410,7 +410,7 @@ const Dashboard = () => {
                 
                 {isProfessor ? (
                   myCourses.length === 0 ? (
-                    <div className="text-center py-10 text-slate-400 font-medium">
+                    <div className="text-center py-10 text-[var(--text-muted)] font-medium">
                       You haven't created any courses yet. Go to the{" "}
                       <Link to="/academic" className="text-indigo-400 hover:underline">Academic</Link> page to create your first course.
                     </div>
@@ -424,18 +424,18 @@ const Dashboard = () => {
                           <Link
                             key={c.id}
                             to={`/academic/${c.id}`}
-                            className="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-white/5 transition-all group flex flex-col justify-between"
+                            className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 hover:border-indigo-500/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all group flex flex-col justify-between shadow-sm"
                           >
                             <div className="space-y-2">
                               <div className="flex justify-between items-start">
-                                <h5 className="font-black text-white uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
+                                <h5 className="font-black text-[var(--text-main)] uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
                                   {c.title}
                                 </h5>
-                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                                <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
                               </div>
-                              <p className="text-xs text-slate-400 font-medium line-clamp-2">{c.description}</p>
+                              <p className="text-xs text-[var(--text-muted)] font-medium line-clamp-2">{c.description}</p>
                             </div>
-                            <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
+                            <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/40 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
                               <Users className="w-3.5 h-3.5" />
                               <span>{enrolledCount} student{enrolledCount !== 1 ? 's' : ''} enrolled</span>
                             </div>
@@ -446,7 +446,7 @@ const Dashboard = () => {
                   )
                 ) : (
                   enrolledCourses.length === 0 ? (
-                    <div className="text-center py-10 text-slate-400 font-medium">
+                    <div className="text-center py-10 text-[var(--text-muted)] font-medium">
                       You are not enrolled in any courses yet. Explore the{" "}
                       <Link to="/academic" className="text-indigo-400 hover:underline">Academic</Link> page.
                     </div>
@@ -456,20 +456,20 @@ const Dashboard = () => {
                         <Link
                           key={c.id}
                           to={`/academic/${c.id}`}
-                          className="glass p-5 rounded-2xl border border-white/5 hover:border-indigo-500/30 hover:bg-white/5 transition-all group flex flex-col justify-between"
+                          className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 hover:border-indigo-500/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all group flex flex-col justify-between shadow-sm"
                         >
                           <div className="space-y-2">
                             <div className="flex justify-between items-start">
-                              <h5 className="font-black text-white uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
+                              <h5 className="font-black text-[var(--text-main)] uppercase tracking-tight text-sm group-hover:text-indigo-400 transition-colors">
                                 {c.title}
                               </h5>
-                              <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
+                              <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
                             </div>
-                            <p className="text-xs text-slate-400 font-medium line-clamp-2">
+                            <p className="text-xs text-[var(--text-muted)] font-medium line-clamp-2">
                               {c.description}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
+                          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-200 dark:border-slate-800/40 text-[10px] font-black text-indigo-400 uppercase tracking-wider">
                             <UserIcon className="w-3.5 h-3.5" />
                             <span>Prof. {c.professorName}</span>
                           </div>
@@ -483,10 +483,10 @@ const Dashboard = () => {
 
             {activeDetailTab === 'tasks' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">Critical Tasks & Agenda</h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">
+                    <h4 className="text-xl font-black text-[var(--text-main)] tracking-tight uppercase">Critical Tasks & Agenda</h4>
+                    <p className="text-xs text-[var(--text-muted)] font-medium">
                       {isProfessor ? 'Submissions to grade and upcoming study sessions.' : 'Urgent assignments and registered study meetups.'}
                     </p>
                   </div>
@@ -496,14 +496,14 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Col: Pending tasks */}
                   <div className="space-y-4">
-                    <h5 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <h5 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] flex items-center gap-2">
                       <ListTodo className="w-4 h-4" />
                       {isProfessor ? `Submissions to Grade (${myPendingSubs.length})` : `Pending Homework (${pendingAssignments.length})`}
                     </h5>
                     
                     {isProfessor ? (
                       myPendingSubs.length === 0 ? (
-                        <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
+                        <div className="bg-white/40 dark:bg-slate-900/20 p-5 rounded-2xl text-center text-[var(--text-muted)] text-xs font-medium border border-slate-200 dark:border-slate-800/40">
                           No pending submissions! All caught up.
                         </div>
                       ) : (
@@ -514,13 +514,13 @@ const Dashboard = () => {
                               <Link
                                 key={s.id}
                                 to={`/academic/${s.courseId}`}
-                                className="glass p-4 rounded-xl border border-white/5 hover:border-amber-500/30 hover:bg-white/5 transition-all block"
+                                className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800/40 hover:border-amber-500/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all block shadow-sm"
                               >
                                 <div className="flex justify-between items-start gap-2">
-                                  <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{s.studentName}</h6>
+                                  <h6 className="font-bold text-[var(--text-main)] text-xs uppercase tracking-tight line-clamp-1">{s.studentName}</h6>
                                   <span className="text-[8px] font-black text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-widest shrink-0">Pending</span>
                                 </div>
-                                <p className="text-[10px] text-indigo-200/60 mt-1 uppercase font-black tracking-wider line-clamp-1">
+                                <p className="text-[10px] text-[var(--text-muted)] mt-1 uppercase font-black tracking-wider line-clamp-1">
                                   Course: {course?.title || 'Unknown'}
                                 </p>
                               </Link>
@@ -530,7 +530,7 @@ const Dashboard = () => {
                       )
                     ) : (
                       pendingAssignments.length === 0 ? (
-                        <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
+                        <div className="bg-white/40 dark:bg-slate-900/20 p-5 rounded-2xl text-center text-[var(--text-muted)] text-xs font-medium border border-slate-200 dark:border-slate-800/40">
                           No pending homework! You are completely up to date.
                         </div>
                       ) : (
@@ -541,15 +541,15 @@ const Dashboard = () => {
                               <Link
                                 key={a.id}
                                 to={`/academic/${a.courseId}`}
-                                className="glass p-4 rounded-xl border border-white/5 hover:border-amber-500/30 hover:bg-white/5 transition-all block"
+                                className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800/40 hover:border-amber-500/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all block shadow-sm"
                               >
                                 <div className="flex justify-between items-start gap-2">
-                                  <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{a.title}</h6>
+                                  <h6 className="font-bold text-[var(--text-main)] text-xs uppercase tracking-tight line-clamp-1">{a.title}</h6>
                                   <span className="text-[8px] font-black text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20 uppercase tracking-widest shrink-0">
                                     Due: {a.dueDate ? new Date(a.dueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : 'N/A'}
                                   </span>
                                 </div>
-                                <p className="text-[10px] text-indigo-200/60 mt-1 uppercase font-black tracking-wider line-clamp-1">
+                                <p className="text-[10px] text-[var(--text-muted)] mt-1 uppercase font-black tracking-wider line-clamp-1">
                                   Course: {course?.title || 'Unknown'}
                                 </p>
                               </Link>
@@ -562,13 +562,13 @@ const Dashboard = () => {
                   
                   {/* Right Col: Joined Meetings */}
                   <div className="space-y-4">
-                    <h5 className="text-[10px] font-black text-violet-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                    <h5 className="text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-[0.3em] flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       Your Upcoming Sessions ({upcomingMeetings.length})
                     </h5>
                     
                     {upcomingMeetings.length === 0 ? (
-                      <div className="glass p-5 rounded-2xl text-center text-slate-400 text-xs font-medium border border-white/5">
+                      <div className="bg-white/40 dark:bg-slate-900/20 p-5 rounded-2xl text-center text-[var(--text-muted)] text-xs font-medium border border-slate-200 dark:border-slate-800/40">
                         No upcoming sessions scheduled. Create or join one in the{" "}
                         <Link to="/community" className="text-violet-400 hover:underline">Community</Link>.
                       </div>
@@ -578,15 +578,15 @@ const Dashboard = () => {
                           <Link
                             key={m.id}
                             to="/community"
-                            className="glass p-4 rounded-xl border border-white/5 hover:border-violet-500/30 hover:bg-white/5 transition-all block"
+                            className="bg-white/60 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800/40 hover:border-violet-500/30 hover:bg-white dark:hover:bg-slate-800/50 transition-all block shadow-sm"
                           >
                             <div className="flex justify-between items-start gap-2">
-                              <h6 className="font-bold text-white text-xs uppercase tracking-tight line-clamp-1">{m.title}</h6>
+                              <h6 className="font-bold text-[var(--text-main)] text-xs uppercase tracking-tight line-clamp-1">{m.title}</h6>
                               <span className="text-[8px] font-black text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20 uppercase tracking-widest shrink-0">
                                 {m.dateTime ? new Date(m.dateTime).toLocaleDateString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
                               </span>
                             </div>
-                            <div className="flex justify-between items-center mt-2 text-[9px] font-black uppercase text-slate-400 tracking-wider">
+                            <div className="flex justify-between items-center mt-2 text-[9px] font-black uppercase text-[var(--text-muted)] tracking-wider">
                               <span>Type: {m.type}</span>
                               <span className="truncate max-w-[120px]">Loc: {m.location}</span>
                             </div>
@@ -601,12 +601,12 @@ const Dashboard = () => {
 
             {activeDetailTab === 'classmates' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">
+                    <h4 className="text-xl font-black text-[var(--text-main)] tracking-tight uppercase">
                       {isProfessor ? 'Your Enrolled Students' : 'Classmate Connections'}
                     </h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">
+                    <p className="text-xs text-[var(--text-muted)] font-medium">
                       {isProfessor ? 'Students currently enrolled in your courses.' : 'Students enrolled in your courses. Collaborative study triggers success.'}
                     </p>
                   </div>
@@ -614,7 +614,7 @@ const Dashboard = () => {
                 </div>
                 
                 {displayClassmates.length === 0 ? (
-                  <div className="text-center py-10 text-slate-400 font-medium">
+                  <div className="text-center py-10 text-[var(--text-muted)] font-medium">
                     {isProfessor ? 'No students enrolled in your courses yet.' : 'No classmates detected. Once other students enroll in the same courses, they will appear here!'}
                   </div>
                 ) : (
@@ -627,24 +627,24 @@ const Dashboard = () => {
                       return (
                         <div
                           key={c.uid}
-                          className="glass p-5 rounded-2xl border border-white/5 flex gap-4 hover:border-indigo-500/30 transition-all hover:bg-white/5 group"
+                          className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 flex gap-4 hover:border-indigo-500/30 transition-all hover:bg-white dark:hover:bg-slate-800/50 group shadow-sm"
                         >
-                          <div className="w-12 h-12 rounded-xl bg-slate-800 overflow-hidden relative shrink-0">
+                          <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden relative shrink-0">
                             <img
                               src={c.photoURL || `https://picsum.photos/seed/${c.uid}/128/128`}
                               alt={c.fullName}
                               className="w-full h-full object-cover"
                             />
-                            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-slate-900 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                           </div>
                           <div className="space-y-1 min-w-0">
-                            <p className="font-bold text-white text-xs truncate group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
+                            <p className="font-bold text-[var(--text-main)] text-xs truncate group-hover:text-indigo-400 transition-colors uppercase tracking-tight">
                               {c.fullName}
                             </p>
-                            <p className="text-[9px] text-slate-400 truncate uppercase font-medium">
+                            <p className="text-[9px] text-[var(--text-muted)] truncate uppercase font-medium">
                               {c.specialization || (isProfessor ? 'Student' : 'Student')}
                             </p>
-                            <div className="text-[8px] font-black text-indigo-400 uppercase tracking-widest mt-1">
+                            <div className="text-[8px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mt-1">
                               {isProfessor ? 'Enrolled in: ' : 'Shared: '}{sharedLabel.length > 0 ? sharedLabel.slice(0, 2).join(', ') : 'None'}
                             </div>
                           </div>
@@ -658,28 +658,28 @@ const Dashboard = () => {
 
             {activeDetailTab === 'index' && (
               <div className="space-y-6">
-                <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
                   <div>
-                    <h4 className="text-xl font-black text-white tracking-tight uppercase">Academic Index Metrics</h4>
-                    <p className="text-xs text-indigo-200/60 font-medium">Augmented performance indicators tracking your academic trajectory.</p>
+                    <h4 className="text-xl font-black text-[var(--text-main)] tracking-tight uppercase">Academic Index Metrics</h4>
+                    <p className="text-xs text-[var(--text-muted)] font-medium">Augmented performance indicators tracking your academic trajectory.</p>
                   </div>
                   <Award className="w-8 h-8 text-violet-400 opacity-80" />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Grade Score card */}
-                  <div className="glass p-5 rounded-2xl border border-white/5 space-y-4">
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Evaluation Score</span>
+                      <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Evaluation Score</span>
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
                     </div>
-                    <div className="text-3xl font-black text-white tracking-tight font-display uppercase">
-                      {averageGrade.toFixed(2)} <span className="text-xs text-slate-400">/ 10</span>
+                    <div className="text-3xl font-black text-[var(--text-main)] tracking-tight font-display uppercase">
+                      {averageGrade.toFixed(2)} <span className="text-xs text-[var(--text-muted)]">/ 10</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
                       Averaged dynamically from all graded homework submissions and portfolio credentials.
                     </p>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${averageGrade * 10}%` }}
@@ -689,18 +689,18 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Completion rate card */}
-                  <div className="glass p-5 rounded-2xl border border-white/5 space-y-4">
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Homework Completion</span>
+                      <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Homework Completion</span>
                       <TrendingUp className="w-4 h-4 text-indigo-400" />
                     </div>
-                    <div className="text-3xl font-black text-white tracking-tight font-display uppercase">
+                    <div className="text-3xl font-black text-[var(--text-main)] tracking-tight font-display uppercase">
                       {Math.round(completionRate * 100)}%
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
                       Rate of submitted tasks ({completedAssignmentsCount}) vs total course assignments ({totalAssignmentsCount}).
                     </p>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${completionRate * 100}%` }}
@@ -710,18 +710,18 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Attendance card */}
-                  <div className="glass p-5 rounded-2xl border border-white/5 space-y-4">
+                  <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Cooperative Index</span>
+                      <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Cooperative Index</span>
                       <UserCheck className="w-4 h-4 text-violet-400" />
                     </div>
-                    <div className="text-3xl font-black text-white tracking-tight font-display uppercase">
+                    <div className="text-3xl font-black text-[var(--text-main)] tracking-tight font-display uppercase">
                       {Math.round(attendanceScore * 10)}%
                     </div>
-                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                    <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
                       Calculated from study node collaboration, workshop attendance, and forum participation.
                     </p>
-                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${attendanceScore * 10}%` }}
@@ -732,9 +732,9 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Index calculation explainer */}
-                <div className="bg-white/5 p-4 rounded-xl border border-white/5 flex gap-4 items-center">
+                <div className="bg-white/40 dark:bg-slate-900/20 p-4 rounded-xl border border-slate-200 dark:border-slate-800/40 flex gap-4 items-center shadow-inner">
                   <div className="text-2xl font-black text-indigo-400 shrink-0 font-display">Formula</div>
-                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                  <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
                     Composite Academic Index is computed in real-time by weighting **Evaluation Score (50%)**, **Homework Completion (30%)**, and **Cooperative Presence (20%)**. Keep your indicators high to top the community leaderboards!
                   </p>
                 </div>
