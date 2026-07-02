@@ -34,7 +34,7 @@ export interface Meeting {
   location: string;
   dateTime: Date;
   description: string;
-  participants: string[]; // List of user IDs
+  participants: string[];
 }
 
 export interface CommentReply {
@@ -54,8 +54,8 @@ export interface PostComment {
   authorPhoto?: string;
   content: string;
   createdAt: any;
-  likes: string[]; // Array of user IDs
-  reactions: Record<string, string[]>; // e.g. { "🔥": ["uid1", "uid2"] }
+  likes: string[];
+  reactions: Record<string, string[]>;
   replies: CommentReply[];
 }
 
@@ -68,7 +68,6 @@ export interface ChatMessage {
   createdAt: any;
 }
 
-// ================= Post CRUD =================
 export const createPost = async (post: Omit<Post, 'id' | 'createdAt'>) => {
   return addDoc(collection(db, "posts"), {
     ...post,
@@ -93,7 +92,6 @@ export const deletePost = async (postId: string) => {
   return deleteDoc(doc(db, "posts", postId));
 };
 
-// ================= Post Comments CRUD, Likes, Reactions & Thread Replies =================
 export const createComment = async (comment: Omit<PostComment, 'id' | 'createdAt' | 'likes' | 'reactions' | 'replies'>) => {
   return addDoc(collection(db, "postComments"), {
     ...comment,
@@ -153,12 +151,9 @@ export const reactToComment = async (commentId: string, userId: string, emoji: s
   if (hasReacted) {
     updatedReactions[emoji] = updatedReactions[emoji].filter(id => id !== userId);
   } else {
-    // Optionally remove user from other emojis first to allow only one reaction type, 
-    // or keep multiple reactions. Let's allow multiple reaction emojis per comment, but toggle this specific one!
     updatedReactions[emoji].push(userId);
   }
   
-  // Clean up empty emoji lists
   if (updatedReactions[emoji].length === 0) {
     delete updatedReactions[emoji];
   }
@@ -174,7 +169,6 @@ export const replyToComment = async (commentId: string, reply: CommentReply) => 
   });
 };
 
-// ================= Meeting CRUD =================
 export const createMeeting = async (meeting: Omit<Meeting, 'id' | 'participants'>) => {
   return addDoc(collection(db, "meetings"), {
     ...meeting,
@@ -219,7 +213,6 @@ export const leaveMeeting = async (meetingId: string, userId: string) => {
   });
 };
 
-// ================= Global Community Chat Lobby =================
 export const sendChatMessage = async (text: string, senderId: string, senderName: string, senderPhoto?: string) => {
   return addDoc(collection(db, "communityMessages"), {
     senderId,

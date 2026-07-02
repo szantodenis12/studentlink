@@ -84,21 +84,18 @@ export default function LoginPage() {
     
     try {
       if (isRegistering) {
-        // 1. Validation check for name
-        if (!fullName.trim()) {
+        if (fullName.trim().length < 3) {
            setError("Please enter your full name.");
            setLoading(false);
            return;
         }
 
-        // 2. Password Strength/Requirements check
         if (!hasMinLength || !hasNumber || !hasUppercase || !hasLowercase) {
           setError("The password does not meet all security requirements.");
           setLoading(false);
           return;
         }
 
-        // 3. Secret Key Validation for Professors/Admins
         if (role === 'professor') {
           const secretKey = "prof-secret-2024";
           
@@ -118,7 +115,6 @@ export default function LoginPage() {
         }
 
         const result = await createUserWithEmailAndPassword(auth, email, password);
-        // Send email verification
         await sendEmailVerification(result.user);
         await setDoc(doc(db, "users", result.user.uid), {
           fullName,
@@ -127,14 +123,12 @@ export default function LoginPage() {
           profileSetup: role === 'admin' ? true : false,
           createdAt: new Date().toISOString()
         });
-        // Sign out immediately - user must verify email first
         await auth.signOut();
         toast.success("Account created! Check your email to verify your account.");
         setIsRegistering(false);
         setForgotSuccess("A verification email has been sent. Please check your inbox and verify your email before logging in.");
       } else {
         const result = await signInWithEmailAndPassword(auth, email, password);
-        // Block login if email not verified
         if (!result.user.emailVerified) {
           setUnverifiedUser(result.user);
           await auth.signOut();
@@ -170,8 +164,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // Use custom branded email endpoint for better deliverability
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch("https://studentlink-mail-service-758968962646.europe-west1.run.app/api/send-reset", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: forgotEmail })
@@ -209,15 +202,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-app)] flex flex-col md:flex-row overflow-hidden font-sans relative transition-colors duration-300">
-      {/* Background Decor */}
+    <div className="min-h-screen bg-[var(--bg-app)] flex flex-col lg:flex-row overflow-hidden font-sans relative transition-colors duration-300">
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-500/5 dark:bg-violet-500/10 blur-[120px] rounded-full animate-pulse" />
       </div>
 
-      {/* Left Pane - Brand & Marketing */}
-      <div className="hidden md:flex md:w-[45%] bg-slate-900 p-12 lg:p-24 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex w-[45%] bg-slate-900 p-12 lg:p-24 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-br from-indigo-600/30 to-violet-600/30 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-500/10 blur-[80px] rounded-full" />
@@ -264,10 +255,9 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right Pane - Auth Form */}
       <div className="flex-1 flex flex-col justify-center p-8 lg:p-24 relative overflow-y-auto z-10">
         <div className="max-w-md w-full mx-auto space-y-12">
-          <div className="md:hidden flex items-center gap-3 mb-12">
+          <div className="lg:hidden flex items-center gap-3 mb-12">
             <img 
               src={logo} 
               alt="StudentLink Logo" 
@@ -487,7 +477,6 @@ export default function LoginPage() {
                       </button>
                     </div>
 
-                    {/* Password Strength Checklist & Bar for Sign Up */}
                     <AnimatePresence>
                       {isRegistering && password.length > 0 && (
                         <motion.div 
@@ -496,7 +485,6 @@ export default function LoginPage() {
                           exit={{ opacity: 0, height: 0 }}
                           className="pt-4 space-y-4 overflow-hidden"
                         >
-                          {/* Strength Bar */}
                           <div className="space-y-1.5">
                             <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest px-1">
                               <span className="text-slate-400">Password Strength</span>
@@ -528,7 +516,6 @@ export default function LoginPage() {
                             </div>
                           </div>
 
-                          {/* Requirements Checklist */}
                           <div className="grid grid-cols-2 gap-2 bg-white/40 dark:bg-slate-950/20 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
                             {[
                               { label: "At least 6 characters", valid: hasMinLength },

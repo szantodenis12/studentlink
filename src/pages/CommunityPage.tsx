@@ -56,7 +56,6 @@ import { enUS } from "date-fns/locale";
 import { cn } from "../lib/utils";
 import { useSearch } from "../context/SearchContext";
 
-// ================= SUB-COMPONENT: POST COMMENTS PANEL =================
 function PostCommentsSection({ postId, profile }: { postId: string; profile: any }) {
   const [comments, setComments] = useState<PostComment[]>([]);
   const [newCommentText, setNewCommentText] = useState("");
@@ -159,7 +158,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
     <div className="glass bg-[var(--bg-app)]/20 p-8 rounded-[2.5rem] border border-indigo-100/40 space-y-6">
       <h5 className="text-sm font-black text-[var(--text-main)] uppercase tracking-widest border-b border-slate-200 dark:border-slate-800 pb-4">Discussion Thread</h5>
       
-      {/* Comments List */}
       <div className="space-y-6 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
         {comments.length === 0 ? (
           <p className="text-xs text-slate-400 font-medium py-6 text-center">No comments yet. Be the first to start the conversation!</p>
@@ -169,7 +167,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
             return (
               <div key={comment.id} className="space-y-4 bg-white/40 dark:bg-slate-900/10 p-5 rounded-2xl border border-white/5 shadow-sm">
                 <div className="flex gap-4">
-                  {/* Author Avatar */}
                   <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 uppercase overflow-hidden">
                     {comment.authorPhoto ? (
                       <img src={comment.authorPhoto} className="w-full h-full object-cover" alt="" />
@@ -178,7 +175,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                     )}
                   </div>
                   
-                  {/* Comment Bubble */}
                   <div className="flex-1 space-y-1">
                     <div className="flex justify-between items-baseline">
                       <span className="text-xs font-black text-[var(--text-main)] uppercase tracking-tight">{comment.authorName}</span>
@@ -214,9 +210,7 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                       <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">{comment.content}</p>
                     )}
 
-                    {/* Actions Row */}
                     <div className="flex items-center gap-4 pt-2 relative">
-                      {/* Like */}
                       <button
                         onClick={() => handleLike(comment)}
                         className={cn(
@@ -228,7 +222,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                         <span>{comment.likes?.length || 0}</span>
                       </button>
 
-                      {/* React */}
                       <div className="relative">
                         <button
                           onClick={() => setShowEmojiPickerId(showEmojiPickerId === comment.id ? null : comment.id)}
@@ -260,7 +253,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                         </AnimatePresence>
                       </div>
 
-                      {/* Reply */}
                       <button
                         onClick={() => { setReplyingToId(replyingToId === comment.id ? null : comment.id); setReplyText(""); }}
                         className="flex items-center gap-1 text-slate-400 hover:text-indigo-600 text-[9px] font-black uppercase tracking-widest transition-all"
@@ -269,7 +261,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                         <span>Reply</span>
                       </button>
 
-                      {/* Edit / Delete (CRUD) */}
                       {comment.authorId === profile?.uid && (
                         <div className="ml-auto flex items-center gap-3">
                           <button
@@ -288,7 +279,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                       )}
                     </div>
 
-                    {/* Reaction Badges */}
                     {comment.reactions && Object.keys(comment.reactions).length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-2">
                         {Object.entries(comment.reactions).map(([emoji, uids]) => {
@@ -314,7 +304,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                   </div>
                 </div>
 
-                {/* Sub-Replies List */}
                 {comment.replies && comment.replies.length > 0 && (
                   <div className="pl-12 space-y-4 border-l-2 border-indigo-50/40 ml-5">
                     {comment.replies.map((reply) => (
@@ -340,7 +329,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
                   </div>
                 )}
 
-                {/* Reply Input Box */}
                 <AnimatePresence>
                   {replyingToId === comment.id && (
                     <motion.form
@@ -373,7 +361,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
         )}
       </div>
 
-      {/* Main Comment Input Bar */}
       <form onSubmit={handleCommentSubmit} className="flex gap-3 pt-4 border-t border-slate-100/50">
         <input
           type="text"
@@ -394,7 +381,6 @@ function PostCommentsSection({ postId, profile }: { postId: string; profile: any
   );
 }
 
-// ================= MAIN COMMUNITY PAGE COMPONENT =================
 export default function CommunityPage() {
   const { profile } = useAuth();
   const { searchQuery } = useSearch();
@@ -402,7 +388,7 @@ export default function CommunityPage() {
   const getGoogleMapsUrl = (locationStr: string) => {
     if (locationStr.includes("@")) {
       const parts = locationStr.split("@");
-      const coords = parts[1].trim(); // "lat,lng"
+      const coords = parts[1].trim();
       return `https://maps.google.com/maps?q=${coords}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
     }
     return `https://maps.google.com/maps?q=${encodeURIComponent(locationStr)}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
@@ -411,7 +397,7 @@ export default function CommunityPage() {
   const getGoogleMapsSearchUrl = (locationStr: string) => {
     if (locationStr.includes("@")) {
       const parts = locationStr.split("@");
-      const coords = parts[1].trim(); // "lat,lng"
+      const coords = parts[1].trim();
       return `https://www.google.com/maps/search/?api=1&query=${coords}`;
     }
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationStr)}`;
@@ -429,7 +415,6 @@ export default function CommunityPage() {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [isCreatingMeeting, setIsCreatingMeeting] = useState(false);
 
-  // Map interactive states
   const [mapSuggestions, setMapSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
@@ -437,17 +422,14 @@ export default function CommunityPage() {
   const markerRef = useRef<any>(null);
   const searchTimeoutRef = useRef<any>(null);
 
-  // Post state
   const [postContent, setPostContent] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Post Editing state
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [editingPostContent, setEditingPostContent] = useState("");
 
-  // Meeting state
   const [editingMeetingId, setEditingMeetingId] = useState<string | null>(null);
   const [meetTitle, setMeetTitle] = useState("");
   const [meetType, setMeetType] = useState<"online" | "physical">("online");
@@ -459,19 +441,15 @@ export default function CommunityPage() {
   const [googleTokens, setGoogleTokens] = useState<any>(null);
   const [isGeneratingMeet, setIsGeneratingMeet] = useState(false);
 
-  // Map collapse state on physical sessions
   const [expandedMeetingMapId, setExpandedMeetingMapId] = useState<string | null>(null);
 
-  // Comments toggler state
   const [expandedPostCommentsId, setExpandedPostCommentsId] = useState<string | null>(null);
 
-  // Chat Lobby state
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newChatMessage, setNewChatMessage] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Listen for OAuth messages
     const handleOAuthMessage = (event: MessageEvent) => {
       if (event.data?.type === "GOOGLE_AUTH_SUCCESS") {
         setGoogleTokens(event.data.tokens);
@@ -491,7 +469,6 @@ export default function CommunityPage() {
     };
   }, []);
 
-  // Sync Global Lobby Chat
   useEffect(() => {
     if (activeTab === "chat") {
       const unsubChat = getChatMessages(setChatMessages);
@@ -499,7 +476,6 @@ export default function CommunityPage() {
     }
   }, [activeTab]);
 
-  // ================= INTERACTIVE LEAFLET MAP & NOMINATIM GEOLOCATION =================
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
       setMeetLat(lat);
@@ -573,7 +549,6 @@ export default function CommunityPage() {
       return;
     }
 
-    // Initialize Leaflet Map
     const timer = setTimeout(async () => {
       const L = (window as any).L;
       if (!L || mapRef.current) return;
@@ -581,7 +556,6 @@ export default function CommunityPage() {
       let defaultLat = meetLat || 46.7712;
       let defaultLng = meetLng || 23.6236;
 
-      // If editing or existing location is present, geocode it first to center map
       if (!meetLat && !meetLng && meetLoc.trim().length > 3) {
         try {
           const res = await fetch(`/api/geocode/search?q=${encodeURIComponent(meetLoc)}&limit=1`);
@@ -611,13 +585,11 @@ export default function CommunityPage() {
       const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
       markerRef.current = marker;
 
-      // Drag listener
       marker.on("dragend", async () => {
         const position = marker.getLatLng();
         await reverseGeocode(position.lat, position.lng);
       });
 
-      // Click listener
       map.on("click", async (e: any) => {
         marker.setLatLng(e.latlng);
         await reverseGeocode(e.latlng.lat, e.latlng.lng);
@@ -634,14 +606,12 @@ export default function CommunityPage() {
     };
   }, [meetType, isCreatingMeeting]);
 
-  // WhatsApp-style Auto-scroll to bottom
   useEffect(() => {
     if (activeTab === "chat") {
       chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages, activeTab]);
 
-  // CRUD: Submit chat message
   const handleSendChat = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newChatMessage.trim() || !profile) return;
@@ -653,7 +623,6 @@ export default function CommunityPage() {
     }
   };
 
-  // CRUD: Submit Post
   const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile || (!postContent.trim() && !selectedFile)) return;
@@ -688,7 +657,6 @@ export default function CommunityPage() {
     }
   };
 
-  // CRUD: Edit Post
   const handlePostEditSubmit = async (postId: string) => {
     if (!editingPostContent.trim()) return;
     try {
@@ -701,7 +669,6 @@ export default function CommunityPage() {
     }
   };
 
-  // CRUD: Delete Post
   const handlePostDelete = async (postId: string) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
@@ -761,7 +728,6 @@ export default function CommunityPage() {
     }
   };
 
-  // CRUD: Save or Update Meeting
   const handleMeetingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
@@ -842,7 +808,6 @@ export default function CommunityPage() {
     }
   };
 
-  // Filter posts reactively using global searchQuery
   const filteredPosts = posts.filter((post) => {
     const query = searchQuery.toLowerCase().trim();
     if (query === "") return true;
@@ -852,7 +817,6 @@ export default function CommunityPage() {
     );
   });
 
-  // Filter meetings reactively using global searchQuery
   const filteredMeetings = meetings.filter((meet) => {
     const query = searchQuery.toLowerCase().trim();
     if (query === "") return true;
@@ -865,7 +829,6 @@ export default function CommunityPage() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
-      {/* Tabs */}
       <div className="flex glass bg-[var(--bg-app)]/40 p-2 rounded-[2.5rem] border border-[var(--glass-border)] shadow-[var(--card-shadow)] backdrop-blur-3xl">
         <button
           onClick={() => setActiveTab("feed")}
@@ -914,7 +877,6 @@ export default function CommunityPage() {
             exit={{ opacity: 0, x: 20 }}
             className="space-y-8"
           >
-            {/* Create Post */}
             <div className="glass p-10 rounded-[3.5rem] relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform">
                 <Send className="w-48 h-48 text-indigo-600" />
@@ -988,7 +950,6 @@ export default function CommunityPage() {
               )}
             </div>
 
-            {/* Posts List */}
             <div className="space-y-8">
               {filteredPosts.map((post) => (
                 <motion.div
@@ -1024,7 +985,6 @@ export default function CommunityPage() {
                       </p>
                     </div>
 
-                    {/* Post creator CRUD triggers */}
                     {post.authorId === profile?.uid && (
                       <div className="ml-auto flex items-center gap-4 relative z-10">
                         <button
@@ -1105,7 +1065,6 @@ export default function CommunityPage() {
                     </div>
                   )}
 
-                  {/* Collapsible comments thread trigger */}
                   <div className="pt-6 border-t border-slate-100/50 flex justify-between items-center">
                     <button
                       onClick={() => setExpandedPostCommentsId(expandedPostCommentsId === post.id ? null : post.id)}
@@ -1268,7 +1227,6 @@ export default function CommunityPage() {
                               }}
                             />
 
-                            {/* Autocomplete suggestions floating dropdown */}
                             {meetType === "physical" && showSuggestions && mapSuggestions.length > 0 && (
                               <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-slate-950 border border-indigo-100/50 dark:border-slate-800/50 rounded-[1.5rem] shadow-2xl z-[9999] overflow-hidden max-h-60 overflow-y-auto backdrop-blur-md">
                                 {mapSuggestions.map((sug, idx) => (
@@ -1312,7 +1270,6 @@ export default function CommunityPage() {
                             ))}
                         </div>
 
-                        {/* Interactive Leaflet Map for PHYSICAL study sessions */}
                         {meetType === "physical" && (
                           <div className="space-y-2 mt-4 relative z-10">
                             <p className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest ml-1 flex items-center gap-1.5 animate-pulse">
@@ -1377,7 +1334,6 @@ export default function CommunityPage() {
                         {meet.type}
                       </div>
                       
-                      {/* Creator CRUD actions */}
                       {meet.creatorId === profile?.uid ? (
                         <div className="flex items-center gap-3 relative z-10">
                           <button
@@ -1422,7 +1378,6 @@ export default function CommunityPage() {
                         </div>
                         <span className="truncate flex-1">{getFriendlyLocation(meet.location)}</span>
                         
-                        {/* Google Maps view trigger button for physical meetings */}
                         {meet.type === "physical" && (
                           <button
                             onClick={() => setExpandedMeetingMapId(expandedMeetingMapId === meet.id ? null : meet.id)}
@@ -1438,7 +1393,6 @@ export default function CommunityPage() {
                         )}
                       </div>
 
-                      {/* Collapsible physical map representation */}
                       <AnimatePresence>
                         {meet.type === "physical" && expandedMeetingMapId === meet.id && (
                           <motion.div
@@ -1530,7 +1484,6 @@ export default function CommunityPage() {
           </motion.div>
         )}
 
-        {/* Global Community WhatsApp-style Chat Room */}
         {activeTab === "chat" && (
           <motion.div
             key="chat"
@@ -1539,7 +1492,6 @@ export default function CommunityPage() {
             exit={{ opacity: 0, x: -20 }}
             className="glass rounded-[3rem] border border-[var(--glass-border)] h-[calc(100vh-16rem)] flex flex-col overflow-hidden relative shadow-[var(--card-shadow)] backdrop-blur-3xl"
           >
-            {/* Header */}
             <div className="p-6 bg-slate-900/5 dark:bg-slate-950/20 border-b border-[var(--glass-border)] flex items-center gap-4 shrink-0">
               <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shrink-0">
                 <Users className="w-6 h-6" />
@@ -1552,7 +1504,6 @@ export default function CommunityPage() {
               </div>
             </div>
 
-            {/* Messages body (independent scroll) */}
             <div className="flex-1 overflow-y-auto p-8 space-y-6 scroll-smooth custom-scrollbar bg-slate-50/10 dark:bg-slate-950/5">
               {chatMessages.length === 0 ? (
                 <div className="text-center py-20 opacity-30">
@@ -1571,7 +1522,6 @@ export default function CommunityPage() {
                         isMe ? "ml-auto flex-row-reverse" : "mr-auto"
                       )}
                     >
-                      {/* Message author photo */}
                       <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white shrink-0 flex items-center justify-center font-black text-xs shadow overflow-hidden uppercase">
                         {msg.senderPhoto ? (
                           <img src={msg.senderPhoto} className="w-full h-full object-cover" alt="" />
@@ -1580,7 +1530,6 @@ export default function CommunityPage() {
                         )}
                       </div>
 
-                      {/* Bubble styling */}
                       <div className="space-y-1">
                         <div
                           className={cn(
@@ -1615,7 +1564,6 @@ export default function CommunityPage() {
               <div ref={chatEndRef} />
             </div>
 
-            {/* WhatsApp-style locked bottom input container */}
             <form
               onSubmit={handleSendChat}
               className="p-6 bg-slate-900/5 dark:bg-slate-950/20 border-t border-[var(--glass-border)] flex gap-4 shrink-0 items-center relative z-10"

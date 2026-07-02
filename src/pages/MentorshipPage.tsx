@@ -45,10 +45,9 @@ export default function MentorshipPage() {
   const [mentors, setMentors] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Bookings list state
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  // Card Payment modal state
+
   const [selectedMentorForBooking, setSelectedMentorForBooking] = useState<UserProfile | null>(null);
   const [showCardModal, setShowCardModal] = useState(false);
   const [cardName, setCardName] = useState("");
@@ -57,14 +56,14 @@ export default function MentorshipPage() {
   const [cardCvc, setCardCvc] = useState("");
   const [isPaying, setIsPaying] = useState(false);
 
-  // Online Meeting Scheduler modal state
+
   const [selectedBookingForScheduling, setSelectedBookingForScheduling] = useState<Booking | null>(null);
   const [showSchedulerModal, setShowSchedulerModal] = useState(false);
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [isScheduling, setIsScheduling] = useState(false);
 
-  // Reviews modal state
+
   const [selectedMentorForReviews, setSelectedMentorForReviews] = useState<UserProfile | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newRating, setNewRating] = useState<number>(5);
@@ -72,7 +71,7 @@ export default function MentorshipPage() {
   const [newComment, setNewComment] = useState<string>("");
   const [submittingReview, setSubmittingReview] = useState<boolean>(false);
 
-  // Mentor Profile form state
+
   const [isEditingMentorProfile, setIsEditingMentorProfile] = useState(false);
   const [mentorPriceText, setMentorPriceText] = useState("200");
   const [mentorSubjectsText, setMentorSubjectsText] = useState("");
@@ -145,7 +144,7 @@ export default function MentorshipPage() {
 
     setIsPaying(true);
     try {
-      // Simulate Stripe transaction processing
+
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       const price = selectedMentorForBooking.mentorshipPrice || 200;
@@ -156,11 +155,11 @@ export default function MentorshipPage() {
         studentId: profile.uid,
         studentName: profile.fullName,
         subject: selectedMentorForBooking.mentorshipSubjects?.[0] || "General",
-        dateTime: new Date(Date.now() + 86400000), // Default next day
+        dateTime: new Date(Date.now() + 86400000),
         price: price
       });
 
-      // Send interactive booking request notification to professor
+
       await createNotification({
         userId: selectedMentorForBooking.uid,
         title: "New Mentorship Request",
@@ -193,10 +192,10 @@ export default function MentorshipPage() {
     try {
       const combinedDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
       
-      // Update booking dateTime in database
+
       await updateBookingDateTime(selectedBookingForScheduling.id, combinedDateTime);
 
-      // Notify the professor
+
       await createNotification({
         userId: selectedBookingForScheduling.mentorId,
         title: "Online Meeting Scheduled",
@@ -245,20 +244,27 @@ export default function MentorshipPage() {
     if (e) e.preventDefault();
     if (!profile) return;
 
-    const parsedPrice = parseFloat(mentorPriceText);
-    if (isNaN(parsedPrice) || parsedPrice <= 0) {
-      toast.error("Please enter a valid session price.");
-      return;
-    }
+    let parsedPrice = 0;
+    let subjects: string[] = [];
+    let bio = "";
 
-    const subjects = mentorSubjectsText
-      .split(",")
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+    if (isMentor) {
+      parsedPrice = parseFloat(mentorPriceText);
+      if (isNaN(parsedPrice) || parsedPrice <= 0) {
+        toast.error("Please enter a valid session price.");
+        return;
+      }
 
-    if (isMentor && subjects.length === 0) {
-      toast.error("Please enter at least one specialization subject.");
-      return;
+      subjects = mentorSubjectsText
+        .split(",")
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      if (subjects.length === 0) {
+        toast.error("Please enter at least one specialization subject.");
+        return;
+      }
+      bio = mentorBioText.trim();
     }
 
     setIsSubmittingMentorProfile(true);
@@ -268,7 +274,7 @@ export default function MentorshipPage() {
         isMentor,
         subjects,
         parsedPrice,
-        mentorBioText.trim()
+        bio
       );
       if (isMentor) {
         toast.success("Mentorship profile updated successfully!");
@@ -288,7 +294,6 @@ export default function MentorshipPage() {
     try {
       await updateBookingStatus(booking.id, "confirmed");
 
-      // Notify the student
       await createNotification({
         userId: booking.studentId,
         title: "Mentorship Request Approved",
@@ -307,7 +312,6 @@ export default function MentorshipPage() {
     try {
       await updateBookingStatus(booking.id, "rejected");
 
-      // Notify the student
       await createNotification({
         userId: booking.studentId,
         title: "Mentorship Request Declined",
@@ -322,7 +326,7 @@ export default function MentorshipPage() {
     }
   };
 
-  // Filter mentors reactively using global searchQuery
+
   const filteredMentors = mentors.filter((mentor) => {
     const query = searchQuery.toLowerCase().trim();
     if (query === "") return true;
@@ -358,10 +362,10 @@ export default function MentorshipPage() {
         </div>
       )}
 
-      {/* Coordinating Professor Portal */}
+
       {profile?.role === "professor" && (
         <div className="space-y-12">
-          {/* Portal Header */}
+
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 glass p-10 rounded-[3.5rem] shadow-xl">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 text-indigo-500 rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -372,14 +376,13 @@ export default function MentorshipPage() {
             </div>
           </div>
 
-          {/* Onboarding / Profile Configuration Panel */}
+
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3.5rem] p-10 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
               <GraduationCap className="w-32 h-32 text-indigo-600" />
             </div>
 
             {!profile.isMentor ? (
-              // Unregistered Mentor Onboarding
               <div className="space-y-8">
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -440,7 +443,6 @@ export default function MentorshipPage() {
                 </form>
               </div>
             ) : isEditingMentorProfile ? (
-              // Editing Mentor Profile Form
               <div className="space-y-8">
                 <div className="space-y-2">
                   <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight font-display">Configure Mentor Profile</h3>
@@ -505,7 +507,6 @@ export default function MentorshipPage() {
                 </form>
               </div>
             ) : (
-              // Active Mentor Display Card
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-6 border-b border-slate-100 dark:border-slate-800">
                   <div className="space-y-2">
@@ -560,7 +561,7 @@ export default function MentorshipPage() {
             )}
           </div>
 
-          {/* Pending Requests Section */}
+
           <div className="space-y-8 glass p-10 rounded-[3.5rem] shadow-xl border border-white/10 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
                <Calendar className="w-32 h-32 text-indigo-600" />
@@ -627,7 +628,6 @@ export default function MentorshipPage() {
             )}
           </div>
 
-          {/* Active Mentorships Section */}
           <div className="space-y-8 glass p-10 rounded-[3.5rem] shadow-xl border border-white/10 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5">
                <GraduationCap className="w-32 h-32 text-indigo-600" />
@@ -703,7 +703,7 @@ export default function MentorshipPage() {
         </div>
       )}
 
-      {/* Active Mentorships Section */}
+
       {profile?.role === "student" && bookings.filter(b => b.status === "confirmed").length > 0 && (
         <div className="space-y-8 glass p-10 rounded-[3.5rem] shadow-xl relative overflow-hidden border border-white/10">
           <div className="absolute top-0 right-0 p-8 opacity-5">
@@ -870,7 +870,7 @@ export default function MentorshipPage() {
         </>
       )}
 
-      {/* Reviews Overlay Modal */}
+
       <AnimatePresence>
         {selectedMentorForReviews && (
           <>
@@ -886,46 +886,46 @@ export default function MentorshipPage() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.9, y: 20 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white w-full max-w-2xl rounded-[3rem] p-10 max-h-[85vh] overflow-y-auto custom-scrollbar border border-slate-200 flex flex-col gap-8 shadow-2xl relative text-slate-900"
+                className="bg-white dark:bg-slate-950 w-full max-w-2xl rounded-[3rem] p-10 max-h-[85vh] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 flex flex-col gap-8 shadow-2xl relative text-slate-900 dark:text-slate-100"
               >
-                {/* Modal Header */}
-                <div className="flex justify-between items-center pb-6 border-b border-slate-200">
+
+                <div className="flex justify-between items-center pb-6 border-b border-slate-200 dark:border-slate-800">
                   <div className="space-y-1">
-                    <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900">
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
                       Reviews & Feedback
                     </h3>
-                    <p className="text-xs text-slate-500 font-medium">
-                      For <span className="font-extrabold text-indigo-600">{selectedMentorForReviews.fullName}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      For <span className="font-extrabold text-indigo-600 dark:text-indigo-400">{selectedMentorForReviews.fullName}</span>
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedMentorForReviews(null)}
-                    className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
+                    className="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-450 rounded-2xl transition-all border border-slate-200 dark:border-slate-800 cursor-pointer"
                   >
-                    <X className="w-5 h-5 text-slate-600" />
+                    <X className="w-5 h-5 text-slate-650 dark:text-slate-400" />
                   </button>
                 </div>
 
-                {/* Reviews List */}
+
                 <div className="space-y-6 flex-1 overflow-y-auto max-h-[40vh] pr-2 custom-scrollbar">
                   {reviews.length > 0 ? (
                     reviews.map((r) => (
                       <div
                         key={r.id}
-                        className="p-6 bg-slate-50 rounded-2xl border border-slate-200 flex gap-4"
+                        className="p-6 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800 flex gap-4"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 overflow-hidden shrink-0 flex items-center justify-center font-black text-indigo-700 text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/35 overflow-hidden shrink-0 flex items-center justify-center font-black text-indigo-700 dark:text-indigo-400 text-sm">
                            {r.studentName.charAt(0)}
                         </div>
                         <div className="space-y-2 flex-1">
                           <div className="flex justify-between items-center">
-                            <h4 className="font-extrabold text-sm text-slate-900">{r.studentName}</h4>
+                            <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">{r.studentName}</h4>
                             <div className="flex items-center gap-1 text-amber-500 text-xs">
                               <Star className="w-3.5 h-3.5 fill-current" />
                               <span className="font-black">{r.rating}.0</span>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                             {r.comment}
                           </p>
                         </div>
@@ -934,21 +934,21 @@ export default function MentorshipPage() {
                   ) : (
                     <div className="text-center py-10 opacity-60">
                       <Star className="w-12 h-12 mx-auto mb-2 text-indigo-400" />
-                      <p className="text-sm font-bold uppercase tracking-widest text-slate-500">No reviews yet</p>
-                      <p className="text-xs font-medium text-slate-500">Be the first student to leave a review!</p>
+                      <p className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">No reviews yet</p>
+                      <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Be the first student to leave a review!</p>
                     </div>
                   )}
                 </div>
 
-                {/* Add Review Form (Only for Students) */}
+
                 {profile?.role === "student" && (
-                  <form onSubmit={handleSubmitReview} className="space-y-6 border-t border-slate-200 pt-8">
+                  <form onSubmit={handleSubmitReview} className="space-y-6 border-t border-slate-200 dark:border-slate-800 pt-8">
                     <div className="space-y-2">
-                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Submit a Review</h4>
-                      <p className="text-xs text-slate-500">Share your learning experience with this professor.</p>
+                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Submit a Review</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Share your learning experience with this professor.</p>
                     </div>
 
-                    {/* Star Rating Select */}
+
                     <div className="flex items-center gap-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -962,21 +962,21 @@ export default function MentorshipPage() {
                           <Star
                             className={cn(
                               "w-8 h-8 transition-colors",
-                              (hoverRating || newRating) >= star ? "fill-current" : "text-slate-350"
+                              (hoverRating || newRating) >= star ? "fill-current" : "text-slate-350 dark:text-slate-650"
                             )}
                           />
                         </button>
                       ))}
                     </div>
 
-                    {/* Feedback Comment Input */}
+
                     <div className="space-y-2">
                       <textarea
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Write your feedback here..."
                         rows={3}
-                        className="w-full p-5 bg-slate-50 border border-slate-200 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none shadow-sm transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+                        className="w-full p-5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[1.5rem] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none shadow-sm transition-all text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       />
                     </div>
 
@@ -994,7 +994,7 @@ export default function MentorshipPage() {
           </>
         )}
 
-        {/* Card Payment Modal */}
+
         {showCardModal && selectedMentorForBooking && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1008,55 +1008,55 @@ export default function MentorshipPage() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white w-full max-w-md rounded-[3rem] p-10 border border-slate-200 flex flex-col gap-6 shadow-2xl relative text-slate-900"
+              className="bg-white dark:bg-slate-950 w-full max-w-md rounded-[3rem] p-10 border border-slate-200 dark:border-slate-800 flex flex-col gap-6 shadow-2xl relative text-slate-900 dark:text-slate-100"
             >
-              <div className="flex justify-between items-center pb-4 border-b border-slate-200">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
                     Secure Checkout
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Mentorship Booking with <span className="font-bold text-indigo-600">{selectedMentorForBooking.fullName}</span>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    Mentorship Booking with <span className="font-bold text-indigo-600 dark:text-indigo-400">{selectedMentorForBooking.fullName}</span>
                   </p>
                 </div>
                 <button
                   onClick={() => setShowCardModal(false)}
-                  className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
+                  className="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-450 rounded-2xl transition-all border border-slate-200 dark:border-slate-850 cursor-pointer"
                 >
-                  <X className="w-5 h-5 text-slate-600" />
+                  <X className="w-5 h-5 text-slate-650 dark:text-slate-400" />
                 </button>
               </div>
 
-              <div className="p-5 bg-indigo-50/60 border border-indigo-100 rounded-[1.8rem] flex items-center justify-between">
+              <div className="p-5 bg-indigo-50/60 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 rounded-[1.8rem] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-indigo-600 rounded-2xl text-white">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Amount to Authorize</p>
-                    <p className="text-xl font-black text-indigo-600 leading-none mt-1">{selectedMentorForBooking.mentorshipPrice || 200} RON</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Amount to Authorize</p>
+                    <p className="text-xl font-black text-indigo-600 dark:text-indigo-400 leading-none mt-1">{selectedMentorForBooking.mentorshipPrice || 200} RON</p>
                   </div>
                 </div>
-                <div className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[8px] font-black uppercase tracking-widest border border-indigo-200 flex items-center gap-1">
+                <div className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-[8px] font-black uppercase tracking-widest border border-indigo-200 dark:border-indigo-800 flex items-center gap-1">
                   <ShieldCheck className="w-3 h-3" /> Stripe Secured
                 </div>
               </div>
 
               <form onSubmit={handlePayAndBook} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Cardholder Name</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-350">Cardholder Name</label>
                   <input
                     type="text"
                     required
                     placeholder="John Doe"
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Card Number</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-355">Card Number</label>
                   <input
                     type="text"
                     required
@@ -1068,13 +1068,13 @@ export default function MentorshipPage() {
                       const formatted = value.match(/.{1,4}/g)?.join(" ") || value;
                       setCardNumber(formatted);
                     }}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Expiry Date</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-355">Expiry Date</label>
                     <input
                       type="text"
                       required
@@ -1088,12 +1088,12 @@ export default function MentorshipPage() {
                         }
                         setCardExpiry(value);
                       }}
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+                      className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">CVC / CVV</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-355">CVC / CVV</label>
                     <input
                       type="password"
                       required
@@ -1101,7 +1101,7 @@ export default function MentorshipPage() {
                       maxLength={3}
                       value={cardCvc}
                       onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, ""))}
-                      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 placeholder:text-slate-400"
+                      className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
@@ -1125,7 +1125,7 @@ export default function MentorshipPage() {
           </motion.div>
         )}
 
-        {/* Meeting Scheduler Modal */}
+
         {showSchedulerModal && selectedBookingForScheduling && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -1139,45 +1139,45 @@ export default function MentorshipPage() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white w-full max-w-md rounded-[3rem] p-10 border border-slate-200 flex flex-col gap-6 shadow-2xl relative text-slate-900"
+              className="bg-white dark:bg-slate-950 w-full max-w-md rounded-[3rem] p-10 border border-slate-200 dark:border-slate-800 flex flex-col gap-6 shadow-2xl relative text-slate-900 dark:text-slate-100"
             >
-              <div className="flex justify-between items-center pb-4 border-b border-slate-200">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
                     Schedule online meeting
                   </h3>
-                  <p className="text-xs text-slate-500 font-medium">
-                    With Professor <span className="font-bold text-indigo-600">{selectedBookingForScheduling.mentorName}</span>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    With Professor <span className="font-bold text-indigo-600 dark:text-indigo-400">{selectedBookingForScheduling.mentorName}</span>
                   </p>
                 </div>
                 <button
                   onClick={() => setShowSchedulerModal(false)}
-                  className="p-3 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 rounded-2xl transition-all border border-slate-200 cursor-pointer"
+                  className="p-3 bg-slate-50 dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-450 rounded-2xl transition-all border border-slate-200 dark:border-slate-850 cursor-pointer"
                 >
-                  <X className="w-5 h-5 text-slate-600" />
+                  <X className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                 </button>
               </div>
 
               <form onSubmit={handleSaveSchedule} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Select Date</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-355">Select Date</label>
                   <input
                     type="date"
                     required
                     value={scheduledDate}
                     onChange={(e) => setScheduledDate(e.target.value)}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600">Select Time</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-355">Select Time</label>
                   <input
                     type="time"
                     required
                     value={scheduledTime}
                     onChange={(e) => setScheduledTime(e.target.value)}
-                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900"
+                    className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all text-sm font-semibold text-slate-900 dark:text-white"
                   />
                 </div>
 

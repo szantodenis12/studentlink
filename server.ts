@@ -10,11 +10,9 @@ import { nanoid } from "nanoid";
 import admin from "firebase-admin";
 import nodemailer from "nodemailer";
 
-// Derive __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Read Firebase config to get Project ID
 const configPath = path.join(__dirname, "firebase-applet-config.json");
 let firebaseConfig: any = {};
 if (fs.existsSync(configPath)) {
@@ -29,7 +27,6 @@ if (fs.existsSync(configPath)) {
   }
 }
 
-// Initialize Firebase Admin (Only if not already initialized)
 if (!admin.apps.length) {
   const serviceAccountPath = path.join(__dirname, "service-account.json");
   if (fs.existsSync(serviceAccountPath)) {
@@ -77,9 +74,7 @@ async function startServer() {
 
   const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 
-  // --- API Routes ---
 
-  // Generate Google Auth URL
   app.get("/api/auth/google/url", (req, res) => {
     const state = nanoid();
     const url = oauth2Client.generateAuthUrl({
@@ -91,16 +86,13 @@ async function startServer() {
     res.json({ url });
   });
 
-  // Google Auth Callback
   app.get("/api/auth/google/callback", async (req, res) => {
     const { code } = req.query;
-    const userId = req.query.state as string; // We'll pass userId in state for simplicity in this demo, or use a better session
+    const userId = req.query.state as string;
 
     try {
       const { tokens } = await oauth2Client.getToken(code as string);
       
-      // In a real app, you'd associate tokens with the user in your DB
-      // We'll return a script to notify the opener
       res.send(`
         <html>
           <body>
@@ -125,7 +117,6 @@ async function startServer() {
     }
   });
 
-  // Create Google Meet Event
   app.post("/api/meetings/create-google-event", async (req, res) => {
     const { tokens, title, description, startDateTime, durationMinutes = 60 } = req.body;
 
@@ -168,9 +159,8 @@ async function startServer() {
     }
   });
 
-  // --- Geocoding Proxy Routes ---
   const geocodeCache = new Map<string, { data: any; expiry: number }>();
-  const CACHE_TTL = 10 * 60 * 1000; // 10 minutes cache
+  const CACHE_TTL = 10 * 60 * 1000;
 
   app.get("/api/geocode/search", async (req, res) => {
     const { q, limit = "5" } = req.query;
@@ -235,7 +225,6 @@ async function startServer() {
       console.warn("Nominatim reverse geocode failed. Trying BigDataCloud fallback...", error);
     }
 
-    // Fallback: BigDataCloud Reverse Geocode Client API (free, fast, no-auth, generous limits)
     try {
       const fallbackUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=ro`;
       const fallbackResponse = await fetch(fallbackUrl);
@@ -258,7 +247,6 @@ async function startServer() {
             postcode: data.postcode
           }
         };
-        // Cache the fallback response as well
         geocodeCache.set(cacheKey, { data: mappedData, expiry: Date.now() + CACHE_TTL });
         return res.json(mappedData);
       }
@@ -266,19 +254,16 @@ async function startServer() {
       console.error("All reverse geocoding providers failed:", fallbackError);
     }
 
-    // Ultimate fallback: Just return the coordinates
     res.json({
       display_name: `Coordinates: ${lat}, ${lon}`,
       address: {}
     });
   });
 
-  // Health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
 
-  // Forgot Password Custom SMTP Endpoint
   app.post("/api/auth/forgot-password", async (req, res) => {
     const { email } = req.body;
 
@@ -287,7 +272,6 @@ async function startServer() {
     }
 
     try {
-      // 1. Verify user exists in Firebase Auth
       let userRecord;
       try {
         userRecord = await admin.auth().getUserByEmail(email);
@@ -298,7 +282,6 @@ async function startServer() {
         throw err;
       }
 
-      // 2. Generate standard Firebase password reset link
       const appUrl = process.env.APP_URL && process.env.APP_URL !== "MY_APP_URL" 
         ? process.env.APP_URL 
         : "http://localhost:3000";
@@ -309,7 +292,6 @@ async function startServer() {
 
       const resetLink = await admin.auth().generatePasswordResetLink(email, actionCodeSettings);
 
-      // 3. Configure NodeMailer Transporter with Gmail SMTP details provided by user
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -318,7 +300,6 @@ async function startServer() {
         }
       });
 
-      // 4. Send beautiful HTML email
       const mailOptions = {
         from: '"StudentLink" <studentlink.contact@gmail.com>',
         to: email,
@@ -326,8 +307,7 @@ async function startServer() {
         html: `
           <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: center;">
             <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 10px 30px rgba(79, 70, 229, 0.05); border: 1px solid #e2e8f0; text-align: left;">
-              
-              <!-- Logo Header -->
+
               <div style="text-align: center; margin-bottom: 30px;">
                 <h1 style="color: #4f46e5; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.05em; text-transform: uppercase;">
                   Student<span style="color: #1e293b;">Link</span>
@@ -337,7 +317,6 @@ async function startServer() {
                 </p>
               </div>
 
-              <!-- Greeting & Content -->
               <h2 style="color: #1e293b; font-size: 20px; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -0.03em;">
                 Password Recovery
               </h2>
@@ -346,14 +325,12 @@ async function startServer() {
                 To choose a new secure password, please click the button below.
               </p>
 
-              <!-- Action Button -->
               <div style="text-align: center; margin-bottom: 35px;">
                 <a href="${resetLink}" style="display: inline-block; background-color: #4f46e5; color: #ffffff; font-weight: bold; text-decoration: none; padding: 16px 36px; border-radius: 16px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); transition: all 0.2s;">
                   Reset Password
                 </a>
               </div>
 
-              <!-- Alternative Link -->
               <p style="color: #64748b; font-size: 12px; line-height: 1.5; margin-bottom: 20px;">
                 If the button above does not work, copy and paste the following link into your browser:
               </p>
@@ -361,7 +338,6 @@ async function startServer() {
                 ${resetLink}
               </div>
 
-              <!-- Notice -->
               <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 25px;" />
               <p style="color: #94a3b8; font-size: 11px; line-height: 1.5; text-align: center; margin: 0;">
                 If you did not request this reset, you can safely ignore this email. Your password will remain unchanged.
@@ -384,7 +360,6 @@ async function startServer() {
     }
   });
 
-  // --- AI Routes ---
   app.post("/api/ai/career-advice", async (req, res) => {
     const { studentName, grades, strengths } = req.body;
     try {
@@ -456,7 +431,6 @@ async function startServer() {
     }
   });
 
-  // --- Vite Middleware ---
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

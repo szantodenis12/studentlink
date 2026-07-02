@@ -38,7 +38,6 @@ import { Course, Assignment, Submission } from "./services/academicService";
 import { Meeting } from "./services/communityService";
 import { cn } from "./lib/utils";
 
-// Dashboard Component
 const Dashboard = () => {
   const { profile } = useAuth();
 
@@ -57,17 +56,14 @@ const Dashboard = () => {
   useEffect(() => {
     if (!profile?.uid) return;
 
-    // 1. All courses
     const unsubCourses = onSnapshot(collection(db, "courses"), (snap) => {
       setCourses(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Course)));
     });
 
-    // 2. All profiles/users
     const unsubUsers = onSnapshot(collection(db, "users"), (snap) => {
       setUsers(snap.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile)));
     });
 
-    // 3. All meetings
     const unsubMeetings = onSnapshot(collection(db, "meetings"), (snap) => {
       setMeetings(snap.docs.map(doc => {
         const data = doc.data();
@@ -79,7 +75,6 @@ const Dashboard = () => {
       }));
     });
 
-    // 4. All assignments
     const unsubAssignments = onSnapshot(collection(db, "assignments"), (snap) => {
       setAssignments(snap.docs.map(doc => {
         const data = doc.data();
@@ -91,13 +86,11 @@ const Dashboard = () => {
       }));
     });
 
-    // 5. This student's submissions
     const qSub = query(collection(db, "submissions"), where("studentId", "==", profile.uid));
     const unsubSubmissions = onSnapshot(qSub, (snap) => {
       setSubmissions(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission)));
     });
 
-    // 6. Pending submissions for professor's review (professors only)
     let unsubProfSubs = () => {};
     if (profile.role === 'professor') {
       const qProfSubs = query(collection(db, "submissions"), where("status", "==", "pending"));
@@ -116,19 +109,16 @@ const Dashboard = () => {
     };
   }, [profile?.uid]);
 
-  // Enrolled Courses derived
   const enrolledCourseIds = profile?.academicData?.enrolledCourses || [];
   const enrolledCourses = courses.filter(c => enrolledCourseIds.includes(c.id));
   const activeCoursesCount = enrolledCourses.length;
 
-  // Classmates: share at least one course and role is student
   const classmates = users.filter(u => {
     if (u.uid === profile?.uid || u.role !== 'student') return false;
     const otherEnrolled = u.academicData?.enrolledCourses || [];
     return otherEnrolled.some(courseId => enrolledCourseIds.includes(courseId));
   });
 
-  // Critical Tasks derived
   const enrolledCourseAssignments = assignments.filter(a => enrolledCourseIds.includes(a.courseId));
   const submittedAssignmentIds = submissions.map(s => s.assignmentId);
   const pendingAssignments = enrolledCourseAssignments.filter(a => !submittedAssignmentIds.includes(a.id));
@@ -141,7 +131,6 @@ const Dashboard = () => {
 
   const criticalTasksCount = pendingAssignments.length + upcomingMeetings.length;
 
-  // Professor-specific derived values
   const isProfessor = profile?.role === 'professor';
   const myCourses = isProfessor ? courses.filter(c => c.professorId === profile?.uid) : [];
   const myCourseIds = myCourses.map(c => c.id);
@@ -154,12 +143,10 @@ const Dashboard = () => {
     : [];
   const profCriticalTasksCount = myPendingSubs.length + upcomingMeetings.length;
 
-  // Role-aware display values
   const displayActiveCount = isProfessor ? myCourses.length : activeCoursesCount;
   const displayCriticalCount = isProfessor ? profCriticalTasksCount : criticalTasksCount;
   const displayClassmates = isProfessor ? myStudents : classmates;
 
-  // Academic Index dynamic calculations
   const gradedSubs = submissions.filter(s => s.status === 'graded' && typeof s.grade === 'number');
   const profileGrades = profile?.academicData?.grades || {};
   const profileGradeValues = Object.values(profileGrades);
@@ -170,7 +157,7 @@ const Dashboard = () => {
   } else if (profileGradeValues.length > 0) {
     averageGrade = profileGradeValues.reduce((sum, val) => sum + val, 0) / profileGradeValues.length;
   } else {
-    averageGrade = 10.0; // Baseline default
+    averageGrade = 10.0;
   }
 
   const totalAssignmentsCount = enrolledCourseAssignments.length;
@@ -185,7 +172,6 @@ const Dashboard = () => {
   const compositeIndex = (averageGrade * 0.5) + (completionRate * 10 * 0.3) + (attendanceScore * 0.2);
   const formattedIndex = compositeIndex.toFixed(2);
 
-  // Dynamic Percentile
   const studentIndices = users
     .filter(u => u.role === 'student')
     .map(u => {
@@ -197,7 +183,7 @@ const Dashboard = () => {
       
       const uEnrolled = u.academicData?.enrolledCourses || [];
       const uTotalAssigns = assignments.filter(a => uEnrolled.includes(a.courseId)).length;
-      const uCompletion = uTotalAssigns > 0 ? 0.8 : 1.0; 
+      const uCompletion = uTotalAssigns > 0 ? 0.8 : 1.0;
 
       const uMeetingsJoined = meetings.filter(m => m.participants?.includes(u.uid)).length;
       const uAttendance = Math.min(10.0, 9.0 + (uMeetingsJoined * 0.25));
@@ -205,13 +191,12 @@ const Dashboard = () => {
       return (uAvgGrade * 0.5) + (uCompletion * 10 * 0.3) + (uAttendance * 0.2);
     });
 
-  let percentile = 15; 
+  let percentile = 15;
   if (studentIndices.length > 0) {
     const higherOrEqual = studentIndices.filter(ind => ind >= compositeIndex).length;
     percentile = Math.max(1, Math.round((higherOrEqual / studentIndices.length) * 100));
   }
 
-  // Dynamic Prediction
   const upcomingAssignment = pendingAssignments
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
   
@@ -494,7 +479,6 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Col: Pending tasks */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] flex items-center gap-2">
                       <ListTodo className="w-4 h-4" />
@@ -560,7 +544,6 @@ const Dashboard = () => {
                     )}
                   </div>
                   
-                  {/* Right Col: Joined Meetings */}
                   <div className="space-y-4">
                     <h5 className="text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-[0.3em] flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -667,7 +650,6 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Grade Score card */}
                   <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Evaluation Score</span>
@@ -688,7 +670,6 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Completion rate card */}
                   <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Homework Completion</span>
@@ -709,7 +690,6 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Attendance card */}
                   <div className="bg-white/60 dark:bg-slate-900/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4 shadow-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-wider">Cooperative Index</span>
@@ -731,7 +711,6 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                {/* Index calculation explainer */}
                 <div className="bg-white/40 dark:bg-slate-900/20 p-4 rounded-xl border border-slate-200 dark:border-slate-800/40 flex gap-4 items-center shadow-inner">
                   <div className="text-2xl font-black text-indigo-400 shrink-0 font-display">Formula</div>
                   <p className="text-[10px] text-[var(--text-muted)] font-medium leading-relaxed">
@@ -828,12 +807,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // If profile is not setup and user is NOT on onboarding page, redirect to onboarding
   if (profile && !profile.profileSetup && location !== "/onboarding") {
     return <Navigate to="/onboarding" replace />;
   }
 
-  // If profile IS setup and user IS on onboarding page, redirect to home
   if (profile && profile.profileSetup && location === "/onboarding") {
     return <Navigate to="/" replace />;
   }

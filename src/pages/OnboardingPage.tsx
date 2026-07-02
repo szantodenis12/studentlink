@@ -278,7 +278,6 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-app)] flex items-center justify-center p-6 font-sans text-[var(--text-main)]">
       <div className="max-w-2xl w-full">
-        {/* Progress Tracker */}
         <div className="flex justify-between mb-12">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex flex-col items-center gap-2 flex-1 relative">
@@ -359,7 +358,6 @@ export default function OnboardingPage() {
               <div className="space-y-6">
                 {profile.role === 'student' ? (
                   <div className="space-y-6">
-                    {/* 1. University Dropdown */}
                     <div className="space-y-2">
                       <label className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest ml-1">
                         University
@@ -390,7 +388,6 @@ export default function OnboardingPage() {
                       </div>
                     </div>
 
-                    {/* Custom University Input */}
                     {selectedUniv === 'other' && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }}
@@ -410,7 +407,6 @@ export default function OnboardingPage() {
                       </motion.div>
                     )}
 
-                    {/* 2. Faculty Dropdown */}
                     {selectedUniv && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }}
@@ -452,7 +448,6 @@ export default function OnboardingPage() {
                       </motion.div>
                     )}
 
-                    {/* Custom Faculty Input */}
                     {(selectedFac === 'other-fac' || selectedUniv === 'other') && selectedUniv && selectedFac && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }}
@@ -472,7 +467,6 @@ export default function OnboardingPage() {
                       </motion.div>
                     )}
 
-                    {/* 3. Specialization Dropdown */}
                     {selectedFac && selectedUniv && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }}
@@ -514,8 +508,7 @@ export default function OnboardingPage() {
                       </motion.div>
                     )}
 
-                    {/* Custom Specialization Input */}
-                    {(selectedSpec === 'other-spec' || selectedFac === 'other-fac' || selectedUniv === 'other') && selectedUniv && selectedFac && selectedSpec && (
+                    {selectedSpec === 'other-spec' && (selectedFac === 'other-fac' || selectedUniv === 'other') && selectedUniv && selectedFac && selectedSpec && (
                       <motion.div 
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}

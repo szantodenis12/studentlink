@@ -140,16 +140,13 @@ export default function AcademicPage() {
     }
   };
 
-  // Filter courses reactively using role and global searchQuery
   const filteredCourses = courses.filter((course) => {
-    // 1. Role-based filtering: Professors only see their own courses
     if (profile?.role === "professor") {
       if (course.professorId !== profile.uid) {
         return false;
       }
     }
 
-    // 2. Search query filtering
     const query = searchQuery.toLowerCase().trim();
     if (query === "") return true;
     return (
@@ -332,7 +329,6 @@ export default function AcademicPage() {
                 {course.description}
               </p>
             </div>
-
             <div className="space-y-8 relative z-10">
               {profile?.role === "student" && !isEnrolled(course.id) && (
                 <button
@@ -341,7 +337,7 @@ export default function AcademicPage() {
                     handleEnroll(course.id);
                   }}
                   disabled={isEnrolling === course.id}
-                  className="w-full py-6 glass bg-indigo-50/50 dark:bg-indigo-900/40 hover:bg-slate-800 dark:hover:bg-indigo-600 text-indigo-600 dark:text-indigo-400 hover:text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 border border-indigo-100 dark:border-indigo-900/40 shadow-2xl"
+                  className="w-full py-6 glass bg-indigo-50/50 dark:bg-indigo-900/40 hover:bg-slate-800 dark:hover:bg-indigo-600 text-indigo-600 dark:text-indigo-400 hover:text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 border border-indigo-100 dark:border-indigo-900/40 shadow-2xl cursor-pointer"
                 >
                   {isEnrolling === course.id
                     ? "Processing..."
@@ -351,18 +347,37 @@ export default function AcademicPage() {
               )}
 
               {profile?.role === "student" && isEnrolled(course.id) && (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => navigate(`/academic/${course.id}`)}
+                    className="w-full py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-xl cursor-pointer"
+                  >
+                    ENTER COURSE
+                    <ChevronRight className="w-5 h-5 text-white" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUnenroll(course.id);
+                    }}
+                    disabled={isUnenrolling === course.id}
+                    className="w-full py-5 glass bg-rose-50/10 dark:bg-rose-950/10 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 border border-rose-100/40 dark:border-rose-900/20 shadow-sm cursor-pointer"
+                  >
+                    {isUnenrolling === course.id
+                      ? "Leaving..."
+                      : "LEAVE COURSE"}
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {profile?.role === "professor" && (
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleUnenroll(course.id);
-                  }}
-                  disabled={isUnenrolling === course.id}
-                  className="w-full py-6 glass bg-rose-50/50 dark:bg-rose-950/20 hover:bg-rose-600 text-rose-600 dark:text-rose-400 hover:text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 border border-rose-100 dark:border-rose-900/40 shadow-2xl"
+                  onClick={() => navigate(`/academic/${course.id}`)}
+                  className="w-full py-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-xl cursor-pointer"
                 >
-                  {isUnenrolling === course.id
-                    ? "Leaving..."
-                    : "LEAVE COURSE"}
-                  <X className="w-5 h-5" />
+                  ENTER COURSE
+                  <ChevronRight className="w-5 h-5 text-white" />
                 </button>
               )}
 
@@ -402,21 +417,13 @@ export default function AcademicPage() {
                           e.stopPropagation();
                           handleDeleteCourse(course.id);
                         }}
-                        className="w-10 h-10 glass rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-all shadow-sm cursor-pointer"
+                        className="w-10 h-10 glass rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-450 hover:bg-rose-600 hover:text-white transition-all shadow-sm cursor-pointer"
                         title="Delete Course"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </>
                   )}
-                  <button
-                    onClick={() => navigate(`/academic/${course.id}`)}
-                    className="flex items-center gap-2 group/btn cursor-pointer"
-                  >
-                    <div className="w-10 h-10 glass rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover/btn:bg-slate-800 dark:group-hover/btn:bg-indigo-600 group-hover/btn:text-white transition-all shadow-sm">
-                      <ChevronRight className="w-5 h-5" />
-                    </div>
-                  </button>
                 </div>
               </div>
             </div>

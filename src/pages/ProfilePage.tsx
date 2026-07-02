@@ -81,7 +81,6 @@ export default function ProfilePage() {
     }
   }, [profile]);
 
-  // Load professor's course count dynamically
   useEffect(() => {
     if (profile?.role === 'professor' && profile?.uid) {
       const q = query(collection(db, "courses"), where("professorId", "==", profile.uid));
@@ -123,7 +122,6 @@ export default function ProfilePage() {
         finalPhotoURL = downloadURL;
       }
 
-      // Update Auth Profile
       try {
         await updateProfile(auth.currentUser!, {
           displayName: editData.fullName,
@@ -138,7 +136,6 @@ export default function ProfilePage() {
         photoURL: finalPhotoURL
       });
 
-      // Update professor's courses
       if (profile.role === 'professor') {
         try {
           const coursesQ = query(collection(db, "courses"), where("professorId", "==", user.uid));
@@ -177,7 +174,6 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-12 pb-12 max-w-6xl mx-auto">
-      {/* Profile Header Card */}
       <div className="glass rounded-[3.5rem] overflow-hidden relative group">
         <button 
           onClick={() => setIsEditing(!isEditing)}
@@ -399,7 +395,6 @@ export default function ProfilePage() {
              )}
           </div>
 
-          {/* AI Content Section & Reviews for Teachers */}
           <div className="lg:col-span-2">
             {profile.role === 'student' ? (
               <AnimatePresence mode="wait">

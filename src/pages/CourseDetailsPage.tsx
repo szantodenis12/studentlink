@@ -54,32 +54,31 @@ export default function CourseDetailsPage() {
   const [isAddingAssignment, setIsAddingAssignment] = useState(false);
   const [newAssignment, setNewAssignment] = useState({ title: '', description: '', dueDate: '' });
   
-  // Submission state
-  const [isSubmitting, setIsSubmitting] = useState<string | null>(null); // assignmentId
+  const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
   const [viewingSubmissionsFor, setViewingSubmissionsFor] = useState<string | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [gradingSubmission, setGradingSubmission] = useState<Submission | null>(null);
   const [gradeData, setGradeData] = useState({ grade: 10, feedback: '' });
   
-  // File upload state
+
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
-  // Quiz state
+
   const [quiz, setQuiz] = useState<any[]>([]);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [currentQuizStep, setCurrentQuizStep] = useState(0);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
 
-  // Comments state
+
   const [expandedMaterialCommentsIndex, setExpandedMaterialCommentsIndex] = useState<number | null>(null);
   const [allMaterialComments, setAllMaterialComments] = useState<any[]>([]);
   const [newCommentText, setNewCommentText] = useState("");
   const [isSendingComment, setIsSendingComment] = useState(false);
 
-  // Course completion / graduation states
+
   const [completion, setCompletion] = useState<CourseCompletion | null>(null);
   const [allCompletions, setAllCompletions] = useState<CourseCompletion[]>([]);
   const [isSubmittingGraduation, setIsSubmittingGraduation] = useState(false);
@@ -93,7 +92,7 @@ export default function CourseDetailsPage() {
     });
     const unsubAssigns = getAssignments(courseId, setAssignments);
 
-    // Listen to all comments for this course
+
     const qComments = query(collection(db, "materialComments"), where("courseId", "==", courseId));
     const unsubComments = onSnapshot(qComments, (snap) => {
       setAllMaterialComments(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
@@ -193,7 +192,7 @@ export default function CourseDetailsPage() {
       setCurrentQuizStep(currentQuizStep + 1);
       setSelectedAnswer(null);
     } else {
-      // Finalize quiz
+
       const finalScore = quiz.reduce((acc, q, i) => acc + (q.correctIndex === (i === currentQuizStep ? selectedAnswer : 0) ? 1 : 0), 0);
       setQuizScore(finalScore);
     }
@@ -205,7 +204,7 @@ export default function CourseDetailsPage() {
       return () => unsub();
     }
     
-    // For students, fetch their own submission if they are not the professor
+
     if (profile?.role === 'student' && activeTab === 'assignments' && assignments.length > 0) {
       const unsubs = assignments.map(a => 
         getStudentSubmissionsForAssignment(a.id, profile.uid, (newSubs) => {
@@ -514,7 +513,6 @@ export default function CourseDetailsPage() {
                               </div>
                            </motion.div>
                            
-                           {/* Expandable comments thread */}
                            <AnimatePresence>
                              {commentsExpanded && (
                                <motion.div
@@ -884,7 +882,7 @@ export default function CourseDetailsPage() {
               className="glass p-10 rounded-[3rem] border border-[var(--glass-border)] shadow-glow-indigo bg-[var(--bg-app)]/20"
             >
               {profile?.role === 'professor' ? (
-                // PROFESSOR GRADUATION DASHBOARD
+
                 <div className="space-y-10 text-left">
                   <div className="border-b border-slate-100 pb-6">
                     <h3 className="text-3xl font-black text-[var(--text-main)] tracking-tight font-display uppercase">Evaluări Studenți</h3>
@@ -959,7 +957,7 @@ export default function CourseDetailsPage() {
                   )}
                 </div>
               ) : (
-                // STUDENT TRAJECTORY FLOW
+
                 completion ? (
                   completion.status === 'pending' ? (
                     <div className="text-center py-16">
@@ -1016,7 +1014,7 @@ export default function CourseDetailsPage() {
                     </div>
                   )
                 ) : (
-                  // STANDARD STUDENT QUIZ RENDERER
+
                   quiz.length === 0 ? (
                     <div className="text-center py-16">
                       <div className="w-24 h-24 bg-indigo-50 border border-indigo-100 rounded-3xl flex items-center justify-center text-indigo-600 mx-auto mb-8 shadow-xl animate-float">

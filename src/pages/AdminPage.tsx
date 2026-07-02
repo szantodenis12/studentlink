@@ -84,7 +84,6 @@ export default function AdminPage() {
     return <div className="p-12 text-center text-red-500 font-black tracking-widest uppercase">Access Denied.</div>;
   }
 
-  // Calculate platform metrics
   const totalStudents = users.filter(u => u.role === "student").length;
   const totalProfessors = users.filter(u => u.role === "professor").length;
   const totalCourses = courses.length;
@@ -99,7 +98,6 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-10 max-w-7xl mx-auto pb-12">
-      {/* Banner */}
       <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden group border border-white/5">
         <div className="absolute top-0 right-0 p-10 opacity-5 -rotate-12 group-hover:rotate-0 transition-transform">
           <ShieldAlert className="w-32 h-32" />
@@ -115,7 +113,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
           <motion.div
@@ -136,10 +133,8 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {/* Moderation Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Users list */}
         <div className="glass p-8 rounded-[3rem] border border-white/5 flex flex-col h-[580px]">
           <div className="border-b border-white/5 pb-4 mb-6">
             <h3 className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1">User Management</h3>
@@ -176,7 +171,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Course Moderation */}
         <div className="glass p-8 rounded-[3rem] border border-white/5 flex flex-col h-[580px]">
           <div className="border-b border-white/5 pb-4 mb-6">
             <h3 className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1">Course Moderation</h3>
@@ -207,7 +201,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Posts moderation */}
         <div className="glass p-8 rounded-[3rem] border border-white/5 flex flex-col h-[580px]">
           <div className="border-b border-white/5 pb-4 mb-6">
             <h3 className="text-[11px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1">Post Moderation</h3>

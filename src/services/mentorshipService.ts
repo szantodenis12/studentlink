@@ -102,7 +102,6 @@ export const updateBookingDateTime = async (bookingId: string, dateTime: Date) =
   });
 };
 
-// Get reviews for a specific mentor
 export const getMentorReviews = (mentorId: string, callback: (reviews: Review[]) => void) => {
   const qSafe = query(collection(db, "reviews"), where("mentorId", "==", mentorId));
   return onSnapshot(qSafe, (snapshot) => {
@@ -116,14 +115,12 @@ export const getMentorReviews = (mentorId: string, callback: (reviews: Review[])
   });
 };
 
-// Create a review for a mentor
 export const addMentorReview = async (review: Omit<Review, 'id' | 'createdAt'>) => {
   const docRef = await addDoc(collection(db, "reviews"), {
     ...review,
     createdAt: serverTimestamp()
   });
   
-  // Recalculate average rating
   const snapshot = await getDocs(query(collection(db, "reviews"), where("mentorId", "==", review.mentorId)));
   const reviews = snapshot.docs.map(doc => doc.data() as Review);
   
@@ -151,7 +148,6 @@ export const updateMentorProfile = async (
     bio
   };
 
-  // Set rating to 0 when enabling mentorship for the first time
   if (isMentor) {
     const userSnap = await getDoc(doc(db, "users", userId));
     const currentRating = userSnap.data()?.rating;

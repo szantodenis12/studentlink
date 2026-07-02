@@ -51,7 +51,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(firebaseUser);
       
       if (firebaseUser) {
-        // Listen to profile changes
         const userDocRef = doc(db, "users", firebaseUser.uid);
         const unsubscribeProfile = onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {

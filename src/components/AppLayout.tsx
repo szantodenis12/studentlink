@@ -53,7 +53,6 @@ export default function AppLayout({ children }: LayoutProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Real-time Firestore subscriptions for global search
   useEffect(() => {
     if (!user) return;
 
@@ -84,7 +83,6 @@ export default function AppLayout({ children }: LayoutProps) {
     };
   }, [user]);
 
-  // Click outside search dropdown to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -102,7 +100,6 @@ export default function AppLayout({ children }: LayoutProps) {
     setShowSearchDropdown(true);
   };
 
-  // Grouped search matches
   const queryNormalized = searchQuery.toLowerCase().trim();
   
   const matchedCourses = queryNormalized 
@@ -227,13 +224,11 @@ export default function AppLayout({ children }: LayoutProps) {
 
   return (
     <div className="flex h-screen bg-[var(--bg-app)] font-sans text-[var(--text-main)] overflow-hidden transition-colors duration-300">
-      {/* Global AI Background Accents */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full animate-pulse" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-violet-500/5 blur-[100px] rounded-full animate-pulse" />
       </div>
 
-      {/* Premium Sidebar */}
       <motion.aside 
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -313,9 +308,7 @@ export default function AppLayout({ children }: LayoutProps) {
         </div>
       </motion.aside>
 
-      {/* Main Content Pane */}
       <main className="flex-1 flex flex-col min-w-0 bg-transparent overflow-auto relative custom-scrollbar">
-        {/* Top Header Navigation */}
         <header className="h-16 glass border-b border-slate-200/40 dark:border-slate-800/40 flex items-center justify-between px-6 sticky top-0 z-30">
           <div className="flex items-center gap-8 flex-1">
             <h1 className="text-2xl font-black text-[var(--text-main)] font-display tracking-tight hidden lg:block">
@@ -342,7 +335,6 @@ export default function AppLayout({ children }: LayoutProps) {
                      </div>
                    ) : (
                      <div className="space-y-6">
-                       {/* Cursuri */}
                        {matchedCourses.length > 0 && (
                          <div className="space-y-3">
                            <div className="flex items-center gap-2 text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">
@@ -372,7 +364,6 @@ export default function AppLayout({ children }: LayoutProps) {
                          </div>
                        )}
 
-                       {/* Mentori */}
                        {matchedMentors.length > 0 && (
                          <div className="space-y-3">
                            <div className="flex items-center gap-2 text-[10px] font-black text-amber-500 dark:text-amber-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">
@@ -402,7 +393,6 @@ export default function AppLayout({ children }: LayoutProps) {
                          </div>
                        )}
 
-                       {/* Sesiuni de Studiu */}
                        {matchedMeetings.length > 0 && (
                          <div className="space-y-3">
                            <div className="flex items-center gap-2 text-[10px] font-black text-violet-600 dark:text-violet-400 uppercase tracking-[0.3em] border-b border-[var(--glass-border)] pb-1.5">

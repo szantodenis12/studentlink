@@ -41,7 +41,7 @@ export interface Assignment {
 export interface Submission {
   id: string;
   assignmentId: string;
-  courseId: string; // Added to help professors filter
+  courseId: string;
   studentId: string;
   studentName: string;
   fileUrl: string;
@@ -52,7 +52,6 @@ export interface Submission {
   submittedAt: any;
 }
 
-// Courses
 export const createCourse = async (course: Omit<Course, 'id' | 'createdAt'>) => {
   return addDoc(collection(db, "courses"), {
     ...course,
@@ -132,7 +131,6 @@ export const addCourseMaterial = async (courseId: string, material: { name: stri
   }
 };
 
-// Assignments
 export const createAssignment = async (assignment: Omit<Assignment, 'id' | 'createdAt'>) => {
   const docRef = await addDoc(collection(db, "assignments"), {
     ...assignment,
@@ -172,13 +170,12 @@ export const getAssignments = (courseId: string, callback: (assignments: Assignm
     const assignments = snapshot.docs.map(doc => ({ 
       id: doc.id, 
       ...doc.data(),
-      dueDate: doc.data().dueDate.toDate() // Convert Firestore Timestamp to JS Date
+      dueDate: doc.data().dueDate.toDate()
     } as any));
     callback(assignments);
   });
 };
 
-// Enrollment
 export const enrollInCourse = async (userId: string, courseId: string) => {
   return updateDoc(doc(db, "users", userId), {
     "academicData.enrolledCourses": arrayUnion(courseId)
@@ -191,7 +188,6 @@ export const unenrollFromCourse = async (userId: string, courseId: string) => {
   });
 };
 
-// Submissions
 export const submitAssignment = async (submission: Omit<Submission, 'id' | 'submittedAt' | 'status'>) => {
   return addDoc(collection(db, "submissions"), {
     ...submission,
@@ -215,7 +211,6 @@ export const gradeSubmission = async (submissionId: string, grade: number, feedb
       status: 'graded'
     });
 
-    // Create notification for student
     await createNotification({
       userId: subData.studentId,
       title: "Temă Notată",
@@ -352,7 +347,6 @@ export const gradeCourseCompletion = async (
     await updateDoc(studentRef, updateObj);
   }
 
-  // Create notification for student
   await createNotification({
     userId: studentId,
     title: "Curs Absolvit! 🎉",
